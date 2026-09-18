@@ -1,0 +1,62 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-2xl font-bold tracking-tight text-gray-900">{{ title }}</h1>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="space-y-10 divide-y divide-gray-900/10">
+        <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3">
+            <div class="px-4 sm:px-0">
+                <h2 class="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
+                <p class="mt-1 text-sm leading-6 text-gray-600">Basic personal details of the individual.</p>
+            </div>
+            
+            <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
+                <div class="px-4 py-6 sm:p-8 grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    {% for field in person_form %}
+                    <div class="sm:col-span-3">
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium leading-6 text-gray-900">{{ field.label }}</label>
+                        <div class="mt-2">
+                            {{ field }}
+                            {% if field.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ field.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3 pt-10">
+            <div class="px-4 sm:px-0">
+                <h2 class="text-base font-semibold leading-7 text-gray-900">Student Profile</h2>
+                <p class="mt-1 text-sm leading-6 text-gray-600">Organization linkage and academic status.</p>
+            </div>
+            
+            <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
+                <div class="px-4 py-6 sm:p-8 grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    {% for field in student_form %}
+                    <div class="sm:col-span-3">
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium leading-6 text-gray-900">{{ field.label }}</label>
+                        <div class="mt-2">
+                            {{ field }}
+                            {% if field.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ field.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+                    <a href="{% url 'people:student_list' %}" class="text-sm font-semibold leading-6 text-gray-900">Cancel</a>
+                    <button type="submit" class="rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

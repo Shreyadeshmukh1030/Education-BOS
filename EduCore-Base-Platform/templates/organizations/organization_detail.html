@@ -1,0 +1,56 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="mb-8 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+        {% if organization.logo %}
+            <img class="h-16 w-16 rounded-lg object-cover shadow" src="{{ organization.logo.url }}" alt="">
+        {% else %}
+            <div class="h-16 w-16 rounded-lg bg-indigo-100 flex items-center justify-center text-primary text-2xl font-bold shadow">{{ organization.name|make_list|first }}</div>
+        {% endif %}
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight text-gray-900">{{ organization.name }}</h1>
+            <p class="text-sm text-gray-500">{{ organization.organization_type.name|default:"Organization" }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <div class="lg:col-span-2">
+        <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl p-6">
+            <h2 class="text-base font-semibold leading-7 text-gray-900">Organization Details</h2>
+            <dl class="mt-4 grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Email address</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ organization.email|default:"-" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Phone</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ organization.phone|default:"-" }}</dd>
+                </div>
+                <div class="sm:col-span-2">
+                    <dt class="text-sm font-medium text-gray-500">Address</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ organization.address|default:"-" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Timezone</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ organization.timezone }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Currency</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ organization.currency }}</dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+    <div>
+        <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl p-6">
+            <h2 class="text-base font-semibold leading-7 text-gray-900">Related</h2>
+            <ul class="mt-4 space-y-3 text-sm">
+                <li><a href="#" class="text-primary hover:underline">Manage Campuses</a></li>
+                <li><a href="#" class="text-primary hover:underline">Manage Departments</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
