@@ -6,5 +6,5 @@ app_name = 'configuration'
 urlpatterns = [
     path('', views.setting_list, name='index'),
     path('settings/create/', views.setting_create, name='setting_create'),
-    path('settings/edit/<int:pk>/', views.setting_edit, name='setting_edit'),
+    path('settings/edit/<uuid:pk>/', views.setting_edit, name='setting_edit'),
 ]

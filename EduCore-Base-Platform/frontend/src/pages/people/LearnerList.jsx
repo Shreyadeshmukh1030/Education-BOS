@@ -1,33 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { DataTable } from '../../components/data-display/DataTable';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
-import { Plus } from 'lucide-react';
+import { Plus, AlertCircle } from 'lucide-react';
 import api from '../../services/api';
+import { queryKeys } from '../../services/queries';
 
 export const LearnerList = () => {
   const navigate = useNavigate();
-  const [learners, setLearners] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    api.get('people/learners/')
-      .then(res => {
-        setLearners(res.data.results || res.data); // Handle pagination if enabled
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Failed to fetch learners", err);
-        setLoading(false);
-      });
-  }, []);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: queryKeys.learners.all,
+    queryFn: async () => {
+      const response = await api.get('people/studentprofiles/');
+      return response.data.results || response.data;
+    }
+  });
 
   const columns = [
-    { header: 'Name', accessor: 'name', primary: true },
-    { header: 'ID', accessor: 'id' },
-    { header: 'Program', accessor: 'program' },
-    { header: 'Group', accessor: 'group' },
+    { 
+      header: 'Name', 
+      accessor: 'name', 
+      primary: true,
+      render: (row) => row.person_name || 'Unknown'
+    },
+    { header: 'Enrollment #', accessor: 'enrollment_number' },
+    { 
+      header: 'Program', 
+      accessor: 'program',
+      render: (row) => row.program_name || 'N/A'
+    },
+    { 
+      header: 'Group', 
+      accessor: 'group',
+      render: (row) => row.group_name || 'N/A'
+    },
     { 
       header: 'Status', 
       accessor: 'status',
@@ -36,11 +45,15 @@ export const LearnerList = () => {
           row.status === 'active' ? 'success' : 
           row.status === 'inactive' ? 'neutral' : 'warning'
         }>
-          {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
+          {row.status ? (row.status.charAt(0).toUpperCase() + row.status.slice(1)) : 'Unknown'}
         </Badge>
       )
     },
-    { header: 'Joined', accessor: 'joined' },
+    { 
+      header: 'Joined', 
+      accessor: 'enrollment_date',
+      render: (row) => row.enrollment_date ? new Date(row.enrollment_date).toLocaleDateString() : 'N/A'
+    },
   ];
 
   return (
@@ -59,12 +72,19 @@ export const LearnerList = () => {
         </div>
       </div>
 
-      {loading ? (
-        <div className="flex justify-center p-8"><p>Loading learners from database...</p></div>
+      {isLoading ? (
+        <div className="flex justify-center items-center p-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      ) : isError ? (
+        <div className="flex flex-col items-center justify-center p-12 text-red-500 bg-red-50 rounded-lg border border-red-100">
+          <AlertCircle className="h-8 w-8 mb-2" />
+          <p>Failed to load learners. Please check your connection.</p>
+        </div>
       ) : (
         <DataTable 
           columns={columns} 
-          data={learners} 
+          data={data || []} 
           onRowClick={(row) => navigate(`/people/learners/${row.id}`)}
           searchPlaceholder="Search learners..."
         />

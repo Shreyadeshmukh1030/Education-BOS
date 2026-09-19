@@ -1,48 +1,98 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-gray-50">
+<html lang="en" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}EduCore Platform{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
                     colors: {
-                        primary: '#4f46e5',
-                        secondary: '#7c3aed',
+                        primary: {
+                            DEFAULT: '#2563EB',
+                            dark: '#1d4ed8',
+                        },
+                        secondary: '#0ea5e9',
+                        accent: '#f59e0b',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444',
+                        neutral: {
+                            100: '#f3f4f6',
+                            300: '#d1d5db',
+                            600: '#475569',
+                            900: '#0f172a',
+                        }
                     }
                 }
             }
         }
     </script>
-    <!-- AlpineJS for interactive components like dropdowns/modals -->
+    
+    <!-- AlpineJS for interactivity -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <style>
+        [x-cloak] { display: none !important; }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="h-full font-sans text-gray-900 antialiased">
-    <div class="min-h-full">
-        <!-- Main Application Layout (Navbar + Sidebar) -->
+<body class="h-full font-sans text-neutral-900 antialiased bg-slate-50 overflow-hidden" x-data="{ sidebarOpen: false }">
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar -->
         {% if user.is_authenticated %}
-            {% include 'components/navbar.html' %}
-            
-            <div class="flex h-[calc(100vh-4rem)]">
-                <!-- Sidebar -->
-                {% include 'components/sidebar.html' %}
-                
-                <!-- Main Content Area -->
-                <main class="flex-1 overflow-y-auto bg-gray-50 p-8">
-                    {% block content %}{% endblock %}
-                </main>
-            </div>
-        {% else %}
-            <!-- Full Page Content (e.g. Login) -->
-            <main class="h-screen bg-gray-50 flex items-center justify-center">
-                {% block full_content %}{% endblock %}
-            </main>
+            {% include 'components/sidebar.html' %}
         {% endif %}
+        
+        <!-- Main Application Area -->
+        <div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+            
+            {% if user.is_authenticated %}
+                <!-- Topbar -->
+                {% include 'components/topbar.html' %}
+            {% endif %}
+            
+            <!-- Main Content -->
+            <main class="w-full">
+                {% if user.is_authenticated %}
+                    <div class="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+                        {% block breadcrumb %}{% endblock %}
+                        {% block content %}{% endblock %}
+                    </div>
+                {% else %}
+                    <!-- Full screen content for login/auth pages -->
+                    <div class="h-screen w-full">
+                        {% block full_content %}{% endblock %}
+                    </div>
+                {% endif %}
+            </main>
+            
+        </div>
     </div>
+    
+    <!-- Global Notifications / Toast Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
+    
+    {% block extra_scripts %}{% endblock %}
 </body>
 </html>

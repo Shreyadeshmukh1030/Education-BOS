@@ -1,0 +1,343 @@
+{% extends 'base/base.html' %}
+
+{% block page_title %}Executive Analytics & Institutional Reports{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-neutral-200/80 shadow-sm print:hidden">
+        <div>
+            <div class="flex items-center gap-2 text-xs font-semibold text-primary uppercase tracking-wider mb-1">
+                Institutional Governance &bull; Audit & Analytics
+            </div>
+            <h1 class="text-2xl font-bold text-neutral-900 tracking-tight">Institutional Performance Reports Hub</h1>
+            <p class="text-sm text-neutral-500">Cross-departmental analytics across academic grading, attendance compliance, and fee reconciliation</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="window.print()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-200 text-xs font-bold text-neutral-700 bg-white hover:bg-neutral-50 shadow-sm transition-all">
+                <svg class="h-4 w-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                Print / Export Report
+            </button>
+            <a href="{% url 'dashboard' %}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-600 shadow-sm transition-all">
+                &larr; Executive Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Print Header (only visible when printed) -->
+    <div class="hidden print:block mb-8 border-b border-neutral-300 pb-4">
+        <h1 class="text-2xl font-bold text-neutral-900">EduCore National Institute of Technology</h1>
+        <p class="text-sm text-neutral-600">Official Institutional Performance & Compliance Audit Report &bull; Generated on {{ today|date:"d F Y, H:i" }} IST</p>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="bg-white p-3 rounded-2xl border border-neutral-200/80 shadow-sm flex items-center gap-2 overflow-x-auto print:hidden">
+        <a href="?tab=overview" class="px-4 py-2 rounded-xl text-xs font-bold transition-all {% if tab == 'overview' %}bg-primary text-white shadow-sm{% else %}bg-neutral-100 text-neutral-600 hover:bg-neutral-200{% endif %}">
+            Executive Summary
+        </a>
+        <a href="?tab=academic" class="px-4 py-2 rounded-xl text-xs font-bold transition-all {% if tab == 'academic' %}bg-primary text-white shadow-sm{% else %}bg-neutral-100 text-neutral-600 hover:bg-neutral-200{% endif %}">
+            Academic & Gradebook Audit
+        </a>
+        <a href="?tab=attendance" class="px-4 py-2 rounded-xl text-xs font-bold transition-all {% if tab == 'attendance' %}bg-primary text-white shadow-sm{% else %}bg-neutral-100 text-neutral-600 hover:bg-neutral-200{% endif %}">
+            Attendance & Shortfall Risk
+        </a>
+        <a href="?tab=finance" class="px-4 py-2 rounded-xl text-xs font-bold transition-all {% if tab == 'finance' %}bg-primary text-white shadow-sm{% else %}bg-neutral-100 text-neutral-600 hover:bg-neutral-200{% endif %}">
+            Fee Collection & Financial Ledger
+        </a>
+    </div>
+
+    <!-- 1. Executive Summary / Overview Tab -->
+    {% if tab == 'overview' or tab == '' %}
+    <div class="space-y-6">
+        <!-- Top Metrics Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="bg-white p-5 rounded-2xl border border-neutral-200/80 shadow-sm">
+                <div class="text-xs text-neutral-500 font-medium">Fee Collection Rate</div>
+                <div class="text-2xl font-bold text-neutral-900 mt-1">{{ collection_rate }}%</div>
+                <div class="text-[11px] text-emerald-600 font-semibold mt-1">₹{{ total_collected|floatformat:0 }} Collected of ₹{{ total_billed|floatformat:0 }}</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-neutral-200/80 shadow-sm">
+                <div class="text-xs text-neutral-500 font-medium">Campus Attendance Standing</div>
+                <div class="text-2xl font-bold text-primary mt-1">{{ overall_attendance_rate }}%</div>
+                <div class="text-[11px] text-neutral-500 mt-1">Threshold: 75.0% Mandatory</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-neutral-200/80 shadow-sm">
+                <div class="text-xs text-neutral-500 font-medium">Evaluations Processed</div>
+                <div class="text-2xl font-bold text-purple-600 mt-1">{{ total_evaluations }}</div>
+                <div class="text-[11px] text-neutral-500 mt-1">Mid-Terms, Quizzes & Practicals</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-neutral-200/80 shadow-sm">
+                <div class="text-xs text-neutral-500 font-medium">Outstanding Dues</div>
+                <div class="text-2xl font-bold text-amber-600 mt-1">₹{{ total_outstanding|floatformat:0 }}</div>
+                <div class="text-[11px] text-neutral-500 mt-1">Pending Semester Invoices</div>
+            </div>
+        </div>
+
+        <!-- Two Column Overview -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Academic Performance Overview -->
+            <div class="bg-white rounded-2xl border border-neutral-200/80 shadow-sm p-6">
+                <div class="flex items-center justify-between pb-4 border-b border-neutral-100">
+                    <h2 class="text-base font-bold text-neutral-900">Grade Point Distribution</h2>
+                    <span class="text-xs font-semibold text-primary">UGC 10-Pt Scale</span>
+                </div>
+                <div class="mt-5 space-y-4">
+                    <div>
+                        <div class="flex justify-between text-xs font-semibold mb-1">
+                            <span>Grade A (Score &ge; 85%)</span>
+                            <span class="text-emerald-600 font-bold">{{ grade_counts.A }} Evaluated</span>
+                        </div>
+                        <div class="w-full h-2.5 bg-neutral-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-emerald-500 rounded-full" style="width: 60%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs font-semibold mb-1">
+                            <span>Grade B (Score 70% - 84%)</span>
+                            <span class="text-blue-600 font-bold">{{ grade_counts.B }} Evaluated</span>
+                        </div>
+                        <div class="w-full h-2.5 bg-neutral-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary rounded-full" style="width: 25%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs font-semibold mb-1">
+                            <span>Grade C (Score 55% - 69%)</span>
+                            <span class="text-amber-600 font-bold">{{ grade_counts.C }} Evaluated</span>
+                        </div>
+                        <div class="w-full h-2.5 bg-neutral-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-amber-400 rounded-full" style="width: 10%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs font-semibold mb-1">
+                            <span>Grade D/F (Pass/Backlog)</span>
+                            <span class="text-rose-600 font-bold">{{ grade_counts.F }} Evaluated</span>
+                        </div>
+                        <div class="w-full h-2.5 bg-neutral-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-rose-500 rounded-full" style="width: 5%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance & Shortfall Overview -->
+            <div class="bg-white rounded-2xl border border-neutral-200/80 shadow-sm p-6">
+                <div class="flex items-center justify-between pb-4 border-b border-neutral-100">
+                    <h2 class="text-base font-bold text-neutral-900">Attendance Compliance Audit</h2>
+                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">Exam Eligibility</span>
+                </div>
+                <div class="mt-4 space-y-3">
+                    <p class="text-xs text-neutral-500 leading-relaxed">
+                        Students maintaining &ge;75% attendance are automatically cleared for end-term examinations. Students marked in red require faculty approval or makeup session clearance.
+                    </p>
+                    <div class="divide-y divide-neutral-100 pt-2">
+                        {% for s in compliant_students %}
+                        <div class="py-2.5 flex items-center justify-between text-xs">
+                            <div class="flex items-center gap-2.5">
+                                <div class="h-7 w-7 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px] flex items-center justify-center">
+                                    {{ s.person.first_name|slice:":1" }}
+                                </div>
+                                <div>
+                                    <span class="font-bold text-neutral-900">{{ s.person.first_name }} {{ s.person.last_name }}</span>
+                                    <span class="text-neutral-400 text-[10px]"> &bull; {{ s.enrollment_number }}</span>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700">
+                                {{ s.calculated_rate }}% Compliant
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 2. Academic Audit Tab -->
+    {% if tab == 'academic' %}
+    <div class="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-neutral-200/80 flex items-center justify-between">
+            <div>
+                <h2 class="text-lg font-bold text-neutral-900">Curricular Evaluations & Performance Ledger</h2>
+                <p class="text-xs text-neutral-500">Student score sheets across mid-term examinations and laboratory evaluations</p>
+            </div>
+            <a href="{% url 'assessment:result_list' %}" class="text-xs font-bold text-primary hover:underline">
+                View All Results &rarr;
+            </a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                    <tr class="border-b border-neutral-200/80 bg-neutral-50/50 text-neutral-500 uppercase tracking-wider font-semibold">
+                        <th class="py-3.5 px-6">Student</th>
+                        <th class="py-3.5 px-6">Subject / Module</th>
+                        <th class="py-3.5 px-6">Assessment Title</th>
+                        <th class="py-3.5 px-6">Score</th>
+                        <th class="py-3.5 px-6 text-right">Awarded Grade</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-neutral-100 text-neutral-800">
+                    {% for r in top_results %}
+                    <tr class="hover:bg-neutral-50/70 transition-colors">
+                        <td class="py-4 px-6 font-bold text-neutral-900">
+                            {{ r.person.first_name }} {{ r.person.last_name }}
+                        </td>
+                        <td class="py-4 px-6 text-neutral-600">
+                            {{ r.assessment.subject_offering.subject.name }}
+                        </td>
+                        <td class="py-4 px-6 font-medium text-neutral-700">
+                            {{ r.assessment.name }}
+                        </td>
+                        <td class="py-4 px-6 font-bold text-neutral-900">
+                            {{ r.marks_obtained|floatformat:0 }} / {{ r.assessment.max_marks|floatformat:0 }}
+                        </td>
+                        <td class="py-4 px-6 text-right">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold {% if r.grade == 'A' %}bg-emerald-100 text-emerald-800{% elif r.grade == 'B' %}bg-blue-100 text-primary{% else %}bg-amber-100 text-amber-800{% endif %}">
+                                Grade {{ r.grade }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-neutral-400">No evaluation records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 3. Attendance Risk Tab -->
+    {% if tab == 'attendance' %}
+    <div class="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-neutral-200/80 flex items-center justify-between">
+            <div>
+                <h2 class="text-lg font-bold text-neutral-900">University Attendance Clearance Ledger</h2>
+                <p class="text-xs text-neutral-500">Official candidate verification roster for upcoming university examination series</p>
+            </div>
+            <span class="text-xs font-bold text-neutral-600">Gate Requirement: 75% Min</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                    <tr class="border-b border-neutral-200/80 bg-neutral-50/50 text-neutral-500 uppercase tracking-wider font-semibold">
+                        <th class="py-3.5 px-6">Student Candidate</th>
+                        <th class="py-3.5 px-6">Enrollment / Roll No</th>
+                        <th class="py-3.5 px-6">Program</th>
+                        <th class="py-3.5 px-6">Attendance Standing</th>
+                        <th class="py-3.5 px-6 text-right">Clearance Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-neutral-100 text-neutral-800">
+                    {% for s in compliant_students %}
+                    <tr class="hover:bg-neutral-50/70 transition-colors">
+                        <td class="py-4 px-6 font-bold text-neutral-900">
+                            {{ s.person.first_name }} {{ s.person.last_name }}
+                        </td>
+                        <td class="py-4 px-6 font-mono text-neutral-600">
+                            {{ s.enrollment_number }}
+                        </td>
+                        <td class="py-4 px-6 text-neutral-600">
+                            B.Tech Computer Science & Engineering
+                        </td>
+                        <td class="py-4 px-6 font-bold text-emerald-700">
+                            {{ s.calculated_rate }}%
+                        </td>
+                        <td class="py-4 px-6 text-right">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                                Eligible for Exams
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% for s in shortfall_students %}
+                    <tr class="hover:bg-neutral-50/70 transition-colors bg-rose-50/30">
+                        <td class="py-4 px-6 font-bold text-rose-900">
+                            {{ s.person.first_name }} {{ s.person.last_name }}
+                        </td>
+                        <td class="py-4 px-6 font-mono text-rose-700">
+                            {{ s.enrollment_number }}
+                        </td>
+                        <td class="py-4 px-6 text-neutral-600">
+                            B.Tech Information Technology
+                        </td>
+                        <td class="py-4 px-6 font-bold text-rose-600">
+                            {{ s.calculated_rate }}%
+                        </td>
+                        <td class="py-4 px-6 text-right">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800">
+                                Shortfall Notice Issued
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 4. Financial Ledger Tab -->
+    {% if tab == 'finance' %}
+    <div class="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-neutral-200/80 flex items-center justify-between">
+            <div>
+                <h2 class="text-lg font-bold text-neutral-900">Fee Collection & Reconciliation Statement</h2>
+                <p class="text-xs text-neutral-500">Live transaction receipts and payment ledger across academic terms</p>
+            </div>
+            <a href="{% url 'finance:payment_list' %}" class="text-xs font-bold text-primary hover:underline">
+                View All Receipts &rarr;
+            </a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                    <tr class="border-b border-neutral-200/80 bg-neutral-50/50 text-neutral-500 uppercase tracking-wider font-semibold">
+                        <th class="py-3.5 px-6">Payment Reference</th>
+                        <th class="py-3.5 px-6">Student Payer</th>
+                        <th class="py-3.5 px-6">Payment Date</th>
+                        <th class="py-3.5 px-6">Payment Method</th>
+                        <th class="py-3.5 px-6 text-right">Amount Credited</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-neutral-100 text-neutral-800">
+                    {% for p in recent_payments %}
+                    <tr class="hover:bg-neutral-50/70 transition-colors">
+                        <td class="py-4 px-6 font-mono font-bold text-primary">
+                            {{ p.reference_number|default:"TXN-SIM-2026101" }}
+                        </td>
+                        <td class="py-4 px-6 font-bold text-neutral-900">
+                            {{ p.invoice.person.first_name }} {{ p.invoice.person.last_name }}
+                        </td>
+                        <td class="py-4 px-6 text-neutral-600">
+                            {{ p.date|date:"d M Y, h:i A" }}
+                        </td>
+                        <td class="py-4 px-6">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-neutral-100 text-neutral-700">
+                                {{ p.method|default:"NetBanking / UPI" }}
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 text-right font-bold text-emerald-600">
+                            ₹{{ p.amount|floatformat:2 }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-neutral-400">No payment records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

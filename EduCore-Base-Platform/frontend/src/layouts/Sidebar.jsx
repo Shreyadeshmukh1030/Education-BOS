@@ -1,10 +1,12 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { getEnabledNavigation } from '../configuration/navigation';
+import { useModules } from '../contexts/ModuleContext';
 import { GraduationCap } from 'lucide-react';
 
 export const Sidebar = () => {
-  const navItems = getEnabledNavigation();
+  const { modules, loading } = useModules();
+  const navItems = getEnabledNavigation(modules);
 
   return (
     <div className="flex flex-col w-64 bg-gray-900 text-white min-h-screen">

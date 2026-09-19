@@ -1,0 +1,244 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Parent Portal - EduCore Platform{% endblock %}
+
+{% block breadcrumb %}
+<nav class="flex mb-4" aria-label="Breadcrumb">
+  <ol class="inline-flex items-center space-x-1 md:space-x-2 text-sm text-neutral-500">
+    <li class="inline-flex items-center">
+      <span class="text-neutral-900 font-medium">Parent Portal</span>
+    </li>
+    <li>
+      <div class="flex items-center">
+        <svg class="w-4 h-4 text-neutral-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+        <span class="ml-1 text-neutral-500">Ward Progress & Fees</span>
+      </div>
+    </li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<!-- Parent Greeting & Child Switcher Bar -->
+<div class="bg-white rounded-2xl border border-neutral-200 p-6 shadow-sm mb-8">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <div class="flex items-center gap-3">
+                <h1 class="text-2xl font-bold text-neutral-900">Hello, {{ user.first_name }} {{ user.last_name }}</h1>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Guardian
+                </span>
+            </div>
+            <p class="text-neutral-500 text-sm mt-1">
+                Monitor your children's academic performance, class attendance and fee payments.
+            </p>
+        </div>
+
+        <!-- Child Switcher Selector -->
+        <div class="flex items-center gap-3 bg-neutral-50 p-2 rounded-xl border border-neutral-200">
+            <span class="text-xs font-semibold text-neutral-500 uppercase tracking-wider pl-2">Select Child:</span>
+            <div class="flex items-center gap-2">
+                {% for w in wards %}
+                <a href="?child_id={{ w.id }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {% if selected_child.id == w.id %}bg-primary text-white shadow-sm{% else %}bg-white text-neutral-700 hover:bg-neutral-100 border border-neutral-200{% endif %}">
+                    {{ w.person.first_name }} {{ w.person.last_name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Child Profile Banner -->
+    {% if selected_child %}
+    <div class="mt-6 pt-6 border-t border-neutral-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-lg">
+                {{ selected_child.person.first_name|make_list|first }}{{ selected_child.person.last_name|make_list|first }}
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-neutral-900">{{ selected_child.person.first_name }} {{ selected_child.person.last_name }}</h3>
+                <p class="text-xs text-neutral-500">
+                    ID: <span class="font-semibold text-neutral-700">{{ selected_child.student_id }}</span> • Program: <span class="font-semibold text-neutral-700">{{ child_enrollment.program.name|default:"B.Tech Computer Science" }}</span>
+                </p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                Academic Standing: Good
+            </span>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Stat Cards Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+    <!-- Attendance Card -->
+    <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm">
+        <span class="text-sm font-medium text-neutral-500">Child's Attendance</span>
+        <div class="text-2xl font-bold text-neutral-900 mt-2">{{ att_rate }}%</div>
+        <div class="w-full bg-neutral-100 rounded-full h-1.5 mt-2 overflow-hidden">
+            <div class="bg-emerald-500 h-1.5 rounded-full" style="width: {{ att_rate }}%"></div>
+        </div>
+        <div class="text-xs text-emerald-600 font-medium mt-2">
+            Above Minimum 75% Requirement
+        </div>
+    </div>
+
+    <!-- Exam Results -->
+    <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm">
+        <span class="text-sm font-medium text-neutral-500">Exams Completed</span>
+        <div class="text-2xl font-bold text-neutral-900 mt-2">{{ child_results.count }} Midterms</div>
+        <div class="text-xs text-neutral-500 mt-1">All Assessments Evaluated</div>
+    </div>
+
+    <!-- Schedule -->
+    <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm">
+        <span class="text-sm font-medium text-neutral-500">Lectures Today</span>
+        <div class="text-2xl font-bold text-neutral-900 mt-2">{{ today_classes.count }} Classes</div>
+        <div class="text-xs text-primary font-medium mt-1">Timetable active</div>
+    </div>
+
+    <!-- Fee Due -->
+    <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm">
+        <span class="text-sm font-medium text-neutral-500">Outstanding Fees</span>
+        {% if child_invoices %}
+            {% with inv=child_invoices.0 %}
+            <div class="text-2xl font-bold text-neutral-900 mt-2">
+                {% if inv.status == 'Paid' %}
+                    ₹0
+                {% else %}
+                    ₹{{ inv.amount_due|floatformat:0 }}
+                {% endif %}
+            </div>
+            <div class="text-xs font-semibold mt-1 {% if inv.status == 'Paid' %}text-emerald-600{% else %}text-rose-600{% endif %}">
+                Status: {{ inv.status }}
+            </div>
+            {% endwith %}
+        {% else %}
+            <div class="text-2xl font-bold text-emerald-600 mt-2">₹0</div>
+            <div class="text-xs text-neutral-500 mt-1">All fees cleared</div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Main 2-Column Content -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Left 2 Cols: Report Card & Schedule -->
+    <div class="lg:col-span-2 space-y-8">
+        
+        <!-- Assessment Results / Report Card -->
+        <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
+                <div>
+                    <h2 class="text-base font-semibold text-neutral-900">{{ selected_child.person.first_name }}'s Academic Report Card</h2>
+                    <p class="text-xs text-neutral-500">Official marks certified by faculty</p>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-neutral-50 text-neutral-500 text-xs font-semibold uppercase tracking-wider border-b border-neutral-200">
+                            <th class="py-3 px-6">Assessment</th>
+                            <th class="py-3 px-6">Subject</th>
+                            <th class="py-3 px-6">Score</th>
+                            <th class="py-3 px-6">Instructor Remark</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-neutral-100 text-sm">
+                        {% for res in child_results %}
+                        <tr class="hover:bg-neutral-50/60">
+                            <td class="py-3.5 px-6 font-semibold text-neutral-900">{{ res.assessment.name }}</td>
+                            <td class="py-3.5 px-6 text-neutral-600">{{ res.assessment.subject_offering.subject.name }}</td>
+                            <td class="py-3.5 px-6 font-bold text-emerald-600">
+                                {{ res.marks_obtained }} <span class="text-xs text-neutral-400 font-normal">/ {{ res.assessment.max_marks }}</span>
+                            </td>
+                            <td class="py-3.5 px-6 text-xs text-neutral-500">{{ res.remarks|default:"Good performance" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="py-6 text-center text-neutral-400 text-sm">No exam scores available yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Today's Classes for Ward -->
+        <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-neutral-200">
+                <h2 class="text-base font-semibold text-neutral-900">Today's Class Schedule</h2>
+                <p class="text-xs text-neutral-500">Daily routine and lecture timings</p>
+            </div>
+            <div class="divide-y divide-neutral-100">
+                {% for schedule in today_classes %}
+                <div class="p-5 flex items-center justify-between hover:bg-neutral-50/50">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 bg-primary/10 text-primary rounded-xl font-bold text-sm text-center min-w-[64px]">
+                            <div>{{ schedule.start_time|time:"g:i" }}</div>
+                            <div class="text-[10px] text-neutral-500 uppercase">{{ schedule.start_time|time:"A" }}</div>
+                        </div>
+                        <div>
+                            <h4 class="text-base font-semibold text-neutral-900">{{ schedule.subject_offering.subject.name }}</h4>
+                            <p class="text-xs text-neutral-500 mt-0.5">Faculty: {{ schedule.subject_offering.instructor.person.first_name }} {{ schedule.subject_offering.instructor.person.last_name }}</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-neutral-100 text-neutral-800 text-xs font-semibold rounded-lg">
+                        {{ schedule.room|default:"Lab 1" }}
+                    </span>
+                </div>
+                {% empty %}
+                <div class="p-8 text-center text-neutral-400 text-sm">No classes scheduled for today.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Right Col: Fee Payment & Direct Action -->
+    <div class="space-y-8">
+        
+        <div class="bg-white rounded-xl border border-neutral-200 shadow-sm p-6">
+            <h3 class="text-base font-semibold text-neutral-900 mb-1">Fee Invoices & Dues</h3>
+            <p class="text-xs text-neutral-500 mb-4">Official billing and tuition fee receipts</p>
+            
+            {% for inv in child_invoices %}
+            <div class="p-4 rounded-xl border border-neutral-200 bg-neutral-50/50 mb-4">
+                <div class="flex items-center justify-between">
+                    <span class="font-semibold text-sm text-neutral-900">{{ inv.fee_structure.name|default:"Annual Tuition" }}</span>
+                    {% if inv.status == 'Paid' %}
+                        <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Paid</span>
+                    {% elif inv.status == 'Partial' %}
+                        <span class="text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Partial</span>
+                    {% else %}
+                        <span class="text-xs font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">Pending</span>
+                    {% endif %}
+                </div>
+                
+                <div class="mt-3 flex items-center justify-between text-xs">
+                    <span class="text-neutral-500">Total Invoice:</span>
+                    <span class="font-bold text-neutral-900">₹{{ inv.amount_due|floatformat:0 }}</span>
+                </div>
+                <div class="mt-1 flex items-center justify-between text-xs">
+                    <span class="text-neutral-500">Paid so far:</span>
+                    <span class="font-bold text-emerald-600">₹{{ inv.amount_paid|floatformat:0 }}</span>
+                </div>
+
+                {% if inv.status != 'Paid' %}
+                <div class="mt-4">
+                    <a href="{% url 'finance:invoice_detail' inv.id %}" class="w-full block text-center py-2.5 px-4 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary-dark shadow-sm transition-colors">
+                        Pay ₹{{ inv.amount_due|floatformat:0 }} Online Now →
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="text-center py-6 text-neutral-400 text-sm">No fee invoices recorded.</div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

@@ -1,48 +1,75 @@
 {% extends 'base/base.html' %}
 
+{% block title %}Academic Sessions - EduCore Platform{% endblock %}
+
+{% block breadcrumb %}
+<nav class="flex mb-4" aria-label="Breadcrumb">
+  <ol class="inline-flex items-center space-x-1 md:space-x-2 text-sm text-neutral-500">
+    <li><a href="{% url 'dashboard' %}" class="hover:text-primary">Dashboard</a></li>
+    <li>
+      <div class="flex items-center">
+        <svg class="w-4 h-4 text-neutral-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+        <span class="ml-1 text-neutral-500">Academics</span>
+      </div>
+    </li>
+    <li>
+      <div class="flex items-center">
+        <svg class="w-4 h-4 text-neutral-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+        <span class="ml-1 text-neutral-900 font-medium">Academic Sessions</span>
+      </div>
+    </li>
+  </ol>
+</nav>
+{% endblock %}
+
 {% block content %}
-<div class="sm:flex sm:items-center sm:justify-between mb-8">
-    <div>
-        <h1 class="text-2xl font-bold tracking-tight text-gray-900">Academic Sessions</h1>
-        <p class="mt-2 text-sm text-gray-700">Manage global time-bound academic sessions.</p>
-    </div>
-    <div class="mt-4 sm:mt-0 flex gap-3">
-        <a href="#" class="inline-flex items-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
-            Add Session
-        </a>
-    </div>
+<div class="mb-6 pb-6 border-b border-neutral-200">
+    <h1 class="text-2xl font-bold text-neutral-900">Academic Calendar & Sessions</h1>
+    <p class="text-neutral-500 text-sm mt-1">Institutional academic years, terms, and current operational cycles.</p>
 </div>
 
-<div class="overflow-hidden bg-white shadow-sm ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-    <table class="min-w-full divide-y divide-gray-300">
-        <thead class="bg-gray-50">
-            <tr>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Name</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Duration</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Organization</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200 bg-white">
-            {% for session in sessions %}
-            <tr>
-                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{ session.name }}</td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ session.start_date|date:"M d, Y" }} - {{ session.end_date|date:"M d, Y" }}</td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ session.organization.name }}</td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {% if session.is_current %}
-                    <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Current</span>
-                    {% else %}
-                    <span class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">Inactive</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4" class="px-3 py-4 text-sm text-gray-500 text-center">No sessions found.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-sm">
+            <thead>
+                <tr class="bg-neutral-50 text-neutral-500 text-xs font-semibold uppercase tracking-wider border-b border-neutral-200">
+                    <th class="py-3.5 px-6">Session Title</th>
+                    <th class="py-3.5 px-6">Start Date</th>
+                    <th class="py-3.5 px-6">End Date</th>
+                    <th class="py-3.5 px-6">Operational Status</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-100">
+                {% for session in sessions %}
+                <tr class="hover:bg-neutral-50/60 transition-colors">
+                    <td class="py-4 px-6 font-bold text-neutral-900">
+                        {{ session.name }}
+                    </td>
+                    <td class="py-4 px-6 text-neutral-600">
+                        {{ session.start_date }}
+                    </td>
+                    <td class="py-4 px-6 text-neutral-600">
+                        {{ session.end_date }}
+                    </td>
+                    <td class="py-4 px-6">
+                        {% if session.is_current %}
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            Current Active Session
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-neutral-100 text-neutral-600">
+                            Archived / Completed
+                        </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="py-8 text-center text-neutral-400">No academic sessions recorded.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

@@ -1,0 +1,254 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Student Portal - EduCore Platform{% endblock %}
+
+{% block breadcrumb %}
+<nav class="flex mb-4" aria-label="Breadcrumb">
+  <ol class="inline-flex items-center space-x-1 md:space-x-2 text-sm text-neutral-500">
+    <li class="inline-flex items-center">
+      <span class="text-neutral-900 font-medium">Student Portal</span>
+    </li>
+    <li>
+      <div class="flex items-center">
+        <svg class="w-4 h-4 text-neutral-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+        <span class="ml-1 text-neutral-500">My Academics</span>
+      </div>
+    </li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<!-- Student Header -->
+<div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 pb-6 border-b border-neutral-200 gap-4">
+    <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary text-white flex items-center justify-center font-bold text-xl shadow-md">
+            {{ user.first_name|make_list|first }}{{ user.last_name|make_list|first }}
+        </div>
+        <div>
+            <div class="flex items-center gap-3">
+                <h1 class="text-2xl font-bold text-neutral-900">{{ user.first_name }} {{ user.last_name }}</h1>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Active Student
+                </span>
+            </div>
+            <p class="text-neutral-500 text-sm mt-0.5">
+                {{ enrollment.program.name|default:"B.Tech Computer Science" }} • ID: {{ student.student_id|default:"STU-2026-1001" }} • Session {{ current_session.name|default:"2026-2027" }}
+            </p>
+        </div>
+    </div>
+    <div>
+        <a href="{% url 'operations:attendance_list' %}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-neutral-300 text-neutral-700 text-sm font-medium rounded-lg hover:bg-neutral-50 shadow-sm transition-colors">
+            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Full Attendance Record
+        </a>
+    </div>
+</div>
+
+<!-- Stat Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+    <!-- Attendance Card -->
+    <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm">
+        <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-neutral-500">Attendance Rate</span>
+            <span class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </span>
+        </div>
+        <div class="text-2xl font-bold text-neutral-900 mt-2">{{ att_rate }}%</div>
+        <div class="w-full bg-neutral-100 rounded-full h-1.5 mt-2 overflow-hidden">
+            <div class="bg-emerald-500 h-1.5 rounded-full" style="width: {{ att_rate }}%"></div>
+        </div>
+        <div class="text-xs text-neutral-500 mt-2">
+            {{ att_present }} Present out of {{ att_total }} Lectures
+        </div>
+    </div>
+
+    <!-- Courses Enrolled -->
+    <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm">
+        <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-neutral-500">My Courses</span>
+            <span class="p-1.5 rounded-lg bg-blue-50 text-primary">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            </span>
+        </div>
+        <div class="text-2xl font-bold text-neutral-900 mt-2">{{ offerings.count|default:"4" }} Subjects</div>
+        <div class="text-xs text-neutral-500 mt-1">Total 14 Academic Credits</div>
+    </div>
+
+    <!-- Today's Schedule Count -->
+    <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm">
+        <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-neutral-500">Classes Today</span>
+            <span class="p-1.5 rounded-lg bg-indigo-50 text-indigo-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </span>
+        </div>
+        <div class="text-2xl font-bold text-neutral-900 mt-2">{{ today_classes.count }} Lectures</div>
+        <div class="text-xs text-indigo-600 font-medium mt-1">Starting 09:00 AM</div>
+    </div>
+
+    <!-- Tuition & Invoices -->
+    <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm">
+        <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-neutral-500">Fee Clearance</span>
+            <span class="p-1.5 rounded-lg bg-amber-50 text-amber-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
+            </span>
+        </div>
+        {% if invoices %}
+            {% with inv=invoices.0 %}
+            <div class="text-2xl font-bold text-neutral-900 mt-2">₹{{ inv.amount_paid|floatformat:0 }}</div>
+            <div class="text-xs font-semibold mt-1 {% if inv.status == 'Paid' %}text-emerald-600{% elif inv.status == 'Partial' %}text-amber-600{% else %}text-rose-600{% endif %}">
+                Status: {{ inv.status }} (Due: ₹{{ inv.amount_due|floatformat:0 }})
+            </div>
+            {% endwith %}
+        {% else %}
+            <div class="text-2xl font-bold text-emerald-600 mt-2">Clear</div>
+            <div class="text-xs text-neutral-500 mt-1">No pending fees</div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Main Sections -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Left 2 Columns: Classes & Results -->
+    <div class="lg:col-span-2 space-y-8">
+        
+        <!-- Today's Classes -->
+        <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
+                <div>
+                    <h2 class="text-base font-semibold text-neutral-900">Today's Class Schedule</h2>
+                    <p class="text-xs text-neutral-500">Live lecture timings and designated classrooms</p>
+                </div>
+                <a href="{% url 'operations:schedule_list' %}" class="text-xs font-semibold text-primary hover:text-primary-dark">Full Timetable</a>
+            </div>
+            <div class="divide-y divide-neutral-100">
+                {% for schedule in today_classes %}
+                <div class="p-5 flex items-center justify-between hover:bg-neutral-50/50 transition-colors">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 bg-primary/10 text-primary rounded-xl font-bold text-sm text-center min-w-[64px]">
+                            <div>{{ schedule.start_time|time:"g:i" }}</div>
+                            <div class="text-[10px] text-neutral-500 uppercase">{{ schedule.start_time|time:"A" }}</div>
+                        </div>
+                        <div>
+                            <h4 class="text-base font-semibold text-neutral-900">{{ schedule.subject_offering.subject.name }}</h4>
+                            <p class="text-xs text-neutral-500 mt-0.5">Faculty: {{ schedule.subject_offering.instructor.person.first_name }} {{ schedule.subject_offering.instructor.person.last_name }}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="px-3 py-1 bg-neutral-100 text-neutral-800 text-xs font-semibold rounded-lg">
+                            {{ schedule.room|default:"Lab 1" }}
+                        </span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="p-8 text-center text-neutral-400 text-sm">No lectures scheduled for today. Enjoy your day!</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Academic Performance & Midterm Results -->
+        <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
+                <div>
+                    <h2 class="text-base font-semibold text-neutral-900">Assessment Scores & Grading</h2>
+                    <p class="text-xs text-neutral-500">Results published by course instructors</p>
+                </div>
+                <a href="{% url 'assessment:result_list' %}" class="text-xs font-semibold text-primary hover:text-primary-dark">View all</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-neutral-50 text-neutral-500 text-xs font-semibold uppercase tracking-wider border-b border-neutral-200">
+                            <th class="py-3 px-6">Assessment</th>
+                            <th class="py-3 px-6">Subject</th>
+                            <th class="py-3 px-6">Score</th>
+                            <th class="py-3 px-6">Feedback</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-neutral-100 text-sm">
+                        {% for res in my_results %}
+                        <tr class="hover:bg-neutral-50/60">
+                            <td class="py-3.5 px-6 font-semibold text-neutral-900">{{ res.assessment.name }}</td>
+                            <td class="py-3.5 px-6 text-neutral-600">{{ res.assessment.subject_offering.subject.name }}</td>
+                            <td class="py-3.5 px-6">
+                                <span class="font-bold text-emerald-600">{{ res.marks_obtained }}</span>
+                                <span class="text-neutral-400 text-xs">/ {{ res.assessment.max_marks }}</span>
+                            </td>
+                            <td class="py-3.5 px-6 text-xs text-neutral-500">{{ res.remarks|default:"Satisfactory" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="py-6 text-center text-neutral-400 text-sm">No exam results published yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Right Col: Fee Summary & Course List -->
+    <div class="space-y-8">
+        
+        <!-- Fee Status Card -->
+        <div class="bg-white rounded-xl border border-neutral-200 shadow-sm p-6">
+            <h3 class="text-base font-semibold text-neutral-900 mb-2">Tuition & Invoicing</h3>
+            <p class="text-xs text-neutral-500 mb-4">Official billing records for the academic year</p>
+            {% for inv in invoices %}
+            <div class="p-4 rounded-xl border border-neutral-200 bg-neutral-50/50 mb-3">
+                <div class="flex items-center justify-between">
+                    <span class="font-semibold text-sm text-neutral-900">{{ inv.fee_structure.name|default:"Tuition Fee" }}</span>
+                    {% if inv.status == 'Paid' %}
+                        <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Paid</span>
+                    {% elif inv.status == 'Partial' %}
+                        <span class="text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Partial</span>
+                    {% else %}
+                        <span class="text-xs font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">Pending</span>
+                    {% endif %}
+                </div>
+                <div class="mt-3 flex items-center justify-between text-xs">
+                    <span class="text-neutral-500">Amount Due:</span>
+                    <span class="font-bold text-neutral-900">₹{{ inv.amount_due|floatformat:0 }}</span>
+                </div>
+                <div class="mt-1 flex items-center justify-between text-xs">
+                    <span class="text-neutral-500">Amount Paid:</span>
+                    <span class="font-bold text-emerald-600">₹{{ inv.amount_paid|floatformat:0 }}</span>
+                </div>
+                {% if inv.status != 'Paid' %}
+                <a href="{% url 'finance:invoice_detail' inv.id %}" class="mt-4 block text-center py-2 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary-dark transition-colors">
+                    Pay Online Now →
+                </a>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="text-center py-4 text-neutral-400 text-sm">No fee records found.</div>
+            {% endfor %}
+        </div>
+
+        <!-- Enrolled Subjects -->
+        <div class="bg-white rounded-xl border border-neutral-200 shadow-sm p-6">
+            <h3 class="text-base font-semibold text-neutral-900 mb-4">Enrolled Subjects</h3>
+            <div class="space-y-3">
+                {% for offering in offerings %}
+                <div class="flex items-center justify-between p-3 rounded-lg border border-neutral-100 bg-neutral-50/50">
+                    <div>
+                        <h4 class="font-medium text-sm text-neutral-900">{{ offering.subject.name }}</h4>
+                        <p class="text-xs text-neutral-500 font-mono">{{ offering.subject.code }} • {{ offering.subject.credits }} Credits</p>
+                    </div>
+                    <span class="text-xs font-semibold text-primary">Active</span>
+                </div>
+                {% empty %}
+                <div class="text-center py-4 text-neutral-400 text-sm">No subjects enrolled.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

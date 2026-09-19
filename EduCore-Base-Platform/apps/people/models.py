@@ -56,6 +56,7 @@ class StaffProfile(BaseModel):
 class GuardianProfile(BaseModel):
     person = models.OneToOneField(Person, on_delete=models.CASCADE, related_name='guardian_profile')
     relationship = models.CharField(max_length=50)
+    students = models.ManyToManyField(StudentProfile, related_name='guardians', blank=True)
 
     def __str__(self):
         return f"Guardian: {self.person}"

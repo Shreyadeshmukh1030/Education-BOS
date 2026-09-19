@@ -1,0 +1,86 @@
+{% extends 'base/base.html' %}
+
+{% block page_title %}{{ message.subject }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <!-- Breadcrumb & Actions -->
+    <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 text-xs font-semibold text-neutral-500">
+            <a href="{% url 'communication:index' %}" class="hover:text-primary transition-colors">Communication</a>
+            <span>&bull;</span>
+            <a href="{% url 'communication:message_list' %}" class="hover:text-primary transition-colors">Messages</a>
+            <span>&bull;</span>
+            <span class="text-neutral-900 font-bold">Dispatch #{{ message.pk }}</span>
+        </div>
+        <a href="{% url 'communication:message_list' %}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-600 hover:text-neutral-900 transition-colors">
+            &larr; Back to Messages
+        </a>
+    </div>
+
+    <!-- Message Dossier Card -->
+    <div class="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
+        <!-- Header -->
+        <div class="p-6 sm:p-8 border-b border-neutral-200/80 bg-neutral-50/40">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                <h1 class="text-xl sm:text-2xl font-bold text-neutral-900">{{ message.subject }}</h1>
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                        Delivered
+                    </span>
+                    <span class="text-xs text-neutral-500 font-medium">
+                        {{ message.created_at|date:"M d, Y h:i A" }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Sender / Recipient Metadata -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-neutral-200/60 text-xs">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-full bg-primary text-white font-bold flex items-center justify-center flex-shrink-0">
+                        {{ message.sender.first_name|slice:":1" }}{{ message.sender.last_name|slice:":1" }}
+                    </div>
+                    <div>
+                        <div class="text-neutral-400 font-medium">Sender</div>
+                        <div class="font-bold text-neutral-900 text-sm">{{ message.sender.first_name }} {{ message.sender.last_name }}</div>
+                        <div class="text-neutral-500">{{ message.sender.email }}</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-full bg-indigo-500 text-white font-bold flex items-center justify-center flex-shrink-0">
+                        {{ message.receiver.first_name|slice:":1" }}{{ message.receiver.last_name|slice:":1" }}
+                    </div>
+                    <div>
+                        <div class="text-neutral-400 font-medium">Recipient</div>
+                        <div class="font-bold text-neutral-900 text-sm">{{ message.receiver.first_name }} {{ message.receiver.last_name }}</div>
+                        <div class="text-neutral-500">{{ message.receiver.email }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="p-6 sm:p-8">
+            <div class="prose prose-sm max-w-none text-neutral-800 leading-relaxed whitespace-pre-line text-sm sm:text-base">
+                {{ message.body }}
+            </div>
+        </div>
+
+        <!-- Bottom Action Bar -->
+        <div class="p-6 bg-neutral-50 border-t border-neutral-200/80 flex flex-wrap items-center justify-between gap-4">
+            <div class="text-xs text-neutral-400 font-medium">
+                Sent via EduCore Secure Internal Communication Engine
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="{% url 'communication:message_compose' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-600 transition-all shadow-sm">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                    </svg>
+                    Reply to Sender
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

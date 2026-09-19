@@ -1,0 +1,86 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Guardians Directory - EduCore Platform{% endblock %}
+
+{% block breadcrumb %}
+<nav class="flex mb-4" aria-label="Breadcrumb">
+  <ol class="inline-flex items-center space-x-1 md:space-x-2 text-sm text-neutral-500">
+    <li><a href="{% url 'dashboard' %}" class="hover:text-primary">Dashboard</a></li>
+    <li>
+      <div class="flex items-center">
+        <svg class="w-4 h-4 text-neutral-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+        <span class="ml-1 text-neutral-500">People</span>
+      </div>
+    </li>
+    <li>
+      <div class="flex items-center">
+        <svg class="w-4 h-4 text-neutral-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+        <span class="ml-1 text-neutral-900 font-medium">Parents & Guardians</span>
+      </div>
+    </li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="mb-6 pb-6 border-b border-neutral-200">
+    <h1 class="text-2xl font-bold text-neutral-900">Parents & Guardians Directory</h1>
+    <p class="text-neutral-500 text-sm mt-1">Authorized contacts and emergency guardians linked to student records.</p>
+</div>
+
+<div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-neutral-50 text-neutral-500 text-xs font-semibold uppercase tracking-wider border-b border-neutral-200">
+                    <th class="py-3.5 px-6">Guardian</th>
+                    <th class="py-3.5 px-6">Relationship</th>
+                    <th class="py-3.5 px-6">Contact Phone</th>
+                    <th class="py-3.5 px-6">Associated Wards / Students</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-100 text-sm">
+                {% for g in guardians %}
+                <tr class="hover:bg-neutral-50/60 transition-colors">
+                    <td class="py-4 px-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs">
+                                {{ g.person.first_name|make_list|first }}{{ g.person.last_name|make_list|first }}
+                            </div>
+                            <div>
+                                <div class="font-semibold text-neutral-900">{{ g.person.first_name }} {{ g.person.last_name }}</div>
+                                <div class="text-xs text-neutral-500">{{ g.person.email }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 text-neutral-700">
+                        <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-neutral-100 text-neutral-700">
+                            {{ g.profile.relationship|default:"Parent" }}
+                        </span>
+                    </td>
+                    <td class="py-4 px-6 text-neutral-700 font-mono text-xs">
+                        {{ g.person.phone|default:"+91 9800000000" }}
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="flex flex-wrap gap-2">
+                            {% for ward in g.wards %}
+                            <a href="{% url 'people:detail' ward.person.id %}" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 text-primary hover:bg-blue-100 text-xs font-semibold transition-colors">
+                                <span>{{ ward.person.first_name }} {{ ward.person.last_name }}</span>
+                                <span class="text-[10px] text-neutral-400 font-mono">({{ ward.student_id }})</span>
+                            </a>
+                            {% empty %}
+                            <span class="text-neutral-400 text-xs">No active wards linked</span>
+                            {% endfor %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="py-8 text-center text-neutral-400 text-sm">No guardians recorded.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -27,6 +27,8 @@ INSTALLED_APPS = [
 
     # Third-party apps
     'rest_framework',
+    'rest_framework_simplejwt',
+    'django_filters',
     'corsheaders',
 
     # Local apps
@@ -67,6 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.core.context_processors.rbac_context',
             ],
         },
     },
@@ -110,9 +113,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_URL = 'login'
+LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'dashboard'
-LOGOUT_REDIRECT_URL = 'login'
+LOGOUT_REDIRECT_URL = 'accounts:login'
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
@@ -123,6 +126,21 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny', # We'll allow any for now for the demo
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
     ]
+}
+
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }

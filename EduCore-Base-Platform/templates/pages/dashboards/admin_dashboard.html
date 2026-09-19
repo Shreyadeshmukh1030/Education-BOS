@@ -1,0 +1,298 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Admin Dashboard - EduCore Platform{% endblock %}
+
+{% block breadcrumb %}
+<nav class="flex mb-4" aria-label="Breadcrumb">
+  <ol class="inline-flex items-center space-x-1 md:space-x-2 text-sm text-neutral-500">
+    <li class="inline-flex items-center">
+      <span class="text-neutral-900 font-medium">Dashboard</span>
+    </li>
+    <li>
+      <div class="flex items-center">
+        <svg class="w-4 h-4 text-neutral-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+        <span class="ml-1 text-neutral-500">Executive Overview</span>
+      </div>
+    </li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<!-- Top Welcome Banner -->
+<div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 pb-6 border-b border-neutral-200 gap-4">
+    <div>
+        <div class="flex items-center gap-3">
+            <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900">Good morning, {{ user.first_name|default:user.username }}</h1>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
+                Super Admin
+            </span>
+        </div>
+        <p class="text-neutral-500 mt-1">
+            {{ organization.name|default:"EduCore Institute of Technology" }} • Session {{ current_session.name|default:"2026-2027" }}
+        </p>
+    </div>
+    <div class="flex items-center gap-3">
+        <a href="{% url 'people:student_create' %}" class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-dark shadow-sm transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Admit Student
+        </a>
+        <a href="{% url 'academics:program_create' %}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-neutral-300 text-neutral-700 text-sm font-medium rounded-lg hover:bg-neutral-50 shadow-sm transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            New Program
+        </a>
+    </div>
+</div>
+
+<!-- Metric Stat Cards Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+    <!-- Card 1: Total Students -->
+    <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-neutral-500">Active Students</span>
+            <span class="p-2 rounded-lg bg-blue-50 text-primary">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            </span>
+        </div>
+        <div class="mt-4">
+            <div class="text-2xl font-bold text-neutral-900">{{ total_students }}</div>
+            <div class="flex items-center gap-1.5 mt-1 text-xs text-emerald-600 font-medium">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                <span>100% Verified in 3 Programs</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 2: Faculty & Instructors -->
+    <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-neutral-500">Faculty Members</span>
+            <span class="p-2 rounded-lg bg-indigo-50 text-indigo-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+            </span>
+        </div>
+        <div class="mt-4">
+            <div class="text-2xl font-bold text-neutral-900">{{ total_faculty }}</div>
+            <div class="flex items-center gap-1.5 mt-1 text-xs text-neutral-500 font-medium">
+                <span>Across CS, IT & Management</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 3: Attendance Rate -->
+    <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-neutral-500">Avg Attendance</span>
+            <span class="p-2 rounded-lg bg-emerald-50 text-emerald-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </span>
+        </div>
+        <div class="mt-4">
+            <div class="text-2xl font-bold text-neutral-900">{{ attendance_rate }}%</div>
+            <div class="w-full bg-neutral-100 rounded-full h-1.5 mt-2 overflow-hidden">
+                <div class="bg-emerald-500 h-1.5 rounded-full" style="width: {{ attendance_rate }}%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 4: Fee Collection -->
+    <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-neutral-500">Fees Collected</span>
+            <span class="p-2 rounded-lg bg-amber-50 text-amber-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </span>
+        </div>
+        <div class="mt-4">
+            <div class="text-2xl font-bold text-neutral-900">₹{{ total_revenue|floatformat:0 }}</div>
+            <div class="flex items-center gap-1.5 mt-1 text-xs text-amber-700 font-medium">
+                <span>Pending Dues: ₹{{ pending_dues|floatformat:0 }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Two-Column Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+    
+    <!-- Left Column (2 Cols): Recent Admissions & Enrollments -->
+    <div class="lg:col-span-2 space-y-8">
+        
+        <!-- Recent Admissions -->
+        <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
+                <div>
+                    <h2 class="text-base font-semibold text-neutral-900">Recent Student Admissions</h2>
+                    <p class="text-xs text-neutral-500">Active enrollments in current academic session</p>
+                </div>
+                <a href="{% url 'people:student_list' %}" class="text-xs font-semibold text-primary hover:text-primary-dark">View all</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-neutral-50 text-neutral-500 text-xs font-semibold uppercase tracking-wider border-b border-neutral-200">
+                            <th class="py-3 px-6">Learner</th>
+                            <th class="py-3 px-6">Program</th>
+                            <th class="py-3 px-6">Enrolled Date</th>
+                            <th class="py-3 px-6">Status</th>
+                            <th class="py-3 px-6 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-neutral-100 text-sm">
+                        {% for enrollment in recent_enrollments %}
+                        <tr class="hover:bg-neutral-50/60 transition-colors">
+                            <td class="py-3.5 px-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
+                                        {{ enrollment.person.first_name|make_list|first }}{{ enrollment.person.last_name|make_list|first }}
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-neutral-900">{{ enrollment.person.first_name }} {{ enrollment.person.last_name }}</div>
+                                        <div class="text-xs text-neutral-500">{{ enrollment.person.email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3.5 px-6 text-neutral-600 font-medium">
+                                {{ enrollment.program.name }}
+                            </td>
+                            <td class="py-3.5 px-6 text-neutral-500 text-xs">
+                                {{ enrollment.enrollment_date }}
+                            </td>
+                            <td class="py-3.5 px-6">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    {{ enrollment.status }}
+                                </span>
+                            </td>
+                            <td class="py-3.5 px-6 text-right">
+                                <a href="{% url 'people:detail' enrollment.person.id %}" class="text-primary hover:text-primary-dark font-medium text-xs">
+                                    View Dossier →
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="py-8 text-center text-neutral-400 text-sm">No enrollments recorded yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Recent Invoices & Billing Overview -->
+        <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
+                <div>
+                    <h2 class="text-base font-semibold text-neutral-900">Recent Invoices & Fee Ledger</h2>
+                    <p class="text-xs text-neutral-500">Latest generated invoices with payment statuses</p>
+                </div>
+                <a href="{% url 'finance:invoice_list' %}" class="text-xs font-semibold text-primary hover:text-primary-dark">Open Finance</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-neutral-50 text-neutral-500 text-xs font-semibold uppercase tracking-wider border-b border-neutral-200">
+                            <th class="py-3 px-6">Student</th>
+                            <th class="py-3 px-6">Fee Type</th>
+                            <th class="py-3 px-6">Amount Due</th>
+                            <th class="py-3 px-6">Paid</th>
+                            <th class="py-3 px-6">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-neutral-100 text-sm">
+                        {% for inv in recent_invoices %}
+                        <tr class="hover:bg-neutral-50/60 transition-colors">
+                            <td class="py-3.5 px-6 font-medium text-neutral-900">
+                                {{ inv.person.first_name }} {{ inv.person.last_name }}
+                            </td>
+                            <td class="py-3.5 px-6 text-neutral-600 text-xs">
+                                {{ inv.fee_structure.name|default:"Annual Tuition" }}
+                            </td>
+                            <td class="py-3.5 px-6 font-semibold text-neutral-900">
+                                ₹{{ inv.amount_due|floatformat:0 }}
+                            </td>
+                            <td class="py-3.5 px-6 text-emerald-600 font-semibold">
+                                ₹{{ inv.amount_paid|floatformat:0 }}
+                            </td>
+                            <td class="py-3.5 px-6">
+                                {% if inv.status == 'Paid' %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Paid</span>
+                                {% elif inv.status == 'Partial' %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">Partial</span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200">Pending</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="py-8 text-center text-neutral-400 text-sm">No invoices recorded yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Right Column: Today's Schedules & Quick Hub -->
+    <div class="space-y-8">
+        
+        <!-- Today's Schedule Card -->
+        <div class="bg-white rounded-xl border border-neutral-200 shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-semibold text-neutral-900">Class Schedule</h3>
+                <a href="{% url 'operations:schedule_list' %}" class="text-xs font-semibold text-primary hover:text-primary-dark">Full Timetable</a>
+            </div>
+            
+            <div class="space-y-3">
+                {% for schedule in today_schedules %}
+                <div class="p-3.5 rounded-lg border border-neutral-100 bg-neutral-50/50 hover:bg-neutral-50 transition-colors">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h4 class="font-semibold text-sm text-neutral-900">{{ schedule.subject_offering.subject.name }}</h4>
+                            <p class="text-xs text-neutral-500 mt-0.5">Faculty: {{ schedule.subject_offering.instructor.person.first_name }} {{ schedule.subject_offering.instructor.person.last_name }}</p>
+                        </div>
+                        <span class="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded">
+                            {{ schedule.room|default:"Lab 1" }}
+                        </span>
+                    </div>
+                    <div class="mt-2.5 flex items-center justify-between text-xs text-neutral-500">
+                        <span class="flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            {{ schedule.start_time|time:"g:i A" }} - {{ schedule.end_time|time:"g:i A" }}
+                        </span>
+                        <a href="{% url 'operations:attendance_mark' %}" class="text-neutral-700 hover:text-primary font-medium">Mark Attendance →</a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-6 text-neutral-400 text-sm">No schedules configured for today.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Quick Administration Hub -->
+        <div class="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-xl text-white p-6 shadow-md">
+            <h3 class="text-base font-semibold mb-2">Quick Navigation Hub</h3>
+            <p class="text-xs text-neutral-300 mb-4">Direct shortcuts to critical management consoles.</p>
+            <div class="grid grid-cols-2 gap-2">
+                <a href="{% url 'people:student_list' %}" class="p-2.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-medium transition-colors flex items-center gap-2">
+                    <span>👥</span> Students Directory
+                </a>
+                <a href="{% url 'academics:program_list' %}" class="p-2.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-medium transition-colors flex items-center gap-2">
+                    <span>🎓</span> Programs & Curriculum
+                </a>
+                <a href="{% url 'operations:attendance_list' %}" class="p-2.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-medium transition-colors flex items-center gap-2">
+                    <span>📋</span> Daily Attendance
+                </a>
+                <a href="{% url 'finance:invoice_list' %}" class="p-2.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-medium transition-colors flex items-center gap-2">
+                    <span>💳</span> Invoicing & Dues
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

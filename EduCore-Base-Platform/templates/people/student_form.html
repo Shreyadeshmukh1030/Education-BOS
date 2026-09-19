@@ -1,62 +1,104 @@
 {% extends 'base/base.html' %}
 
+{% block title %}{{ title }} - EduCore Platform{% endblock %}
+
+{% block breadcrumb %}
+<nav class="flex mb-4" aria-label="Breadcrumb">
+  <ol class="inline-flex items-center space-x-1 md:space-x-2 text-sm text-neutral-500">
+    <li><a href="{% url 'dashboard' %}" class="hover:text-primary">Dashboard</a></li>
+    <li>
+      <div class="flex items-center">
+        <svg class="w-4 h-4 text-neutral-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+        <a href="{% url 'people:student_list' %}" class="ml-1 hover:text-primary">Students</a>
+      </div>
+    </li>
+    <li>
+      <div class="flex items-center">
+        <svg class="w-4 h-4 text-neutral-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+        <span class="ml-1 text-neutral-900 font-medium">{{ title }}</span>
+      </div>
+    </li>
+  </ol>
+</nav>
+{% endblock %}
+
 {% block content %}
-<div class="mb-8">
-    <h1 class="text-2xl font-bold tracking-tight text-gray-900">{{ title }}</h1>
-</div>
-
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="space-y-10 divide-y divide-gray-900/10">
-        <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3">
-            <div class="px-4 sm:px-0">
-                <h2 class="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
-                <p class="mt-1 text-sm leading-6 text-gray-600">Basic personal details of the individual.</p>
-            </div>
-            
-            <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
-                <div class="px-4 py-6 sm:p-8 grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                    {% for field in person_form %}
-                    <div class="sm:col-span-3">
-                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium leading-6 text-gray-900">{{ field.label }}</label>
-                        <div class="mt-2">
-                            {{ field }}
-                            {% if field.errors %}
-                                <p class="mt-2 text-sm text-red-600">{{ field.errors.0 }}</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3 pt-10">
-            <div class="px-4 sm:px-0">
-                <h2 class="text-base font-semibold leading-7 text-gray-900">Student Profile</h2>
-                <p class="mt-1 text-sm leading-6 text-gray-600">Organization linkage and academic status.</p>
-            </div>
-            
-            <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
-                <div class="px-4 py-6 sm:p-8 grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                    {% for field in student_form %}
-                    <div class="sm:col-span-3">
-                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium leading-6 text-gray-900">{{ field.label }}</label>
-                        <div class="mt-2">
-                            {{ field }}
-                            {% if field.errors %}
-                                <p class="mt-2 text-sm text-red-600">{{ field.errors.0 }}</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
-                    <a href="{% url 'people:student_list' %}" class="text-sm font-semibold leading-6 text-gray-900">Cancel</a>
-                    <button type="submit" class="rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">Save</button>
-                </div>
-            </div>
-        </div>
+<div class="max-w-4xl mx-auto">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-neutral-900">{{ title }}</h1>
+        <p class="text-neutral-500 text-sm mt-1">Fill in the personal information and institutional details to register a learner.</p>
     </div>
-</form>
+
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        
+        <!-- Personal Info Card -->
+        <div class="bg-white rounded-xl border border-neutral-200 p-6 shadow-sm">
+            <h2 class="text-base font-semibold text-neutral-900 mb-4 pb-2 border-b border-neutral-100">Personal Information</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-neutral-700 mb-1">First Name *</label>
+                    {{ person_form.first_name }}
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-neutral-700 mb-1">Last Name *</label>
+                    {{ person_form.last_name }}
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-neutral-700 mb-1">Email Address *</label>
+                    {{ person_form.email }}
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-neutral-700 mb-1">Phone Number</label>
+                    {{ person_form.phone }}
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-neutral-700 mb-1">Gender</label>
+                    {{ person_form.gender }}
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-neutral-700 mb-1">Date of Birth</label>
+                    {{ person_form.date_of_birth }}
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold text-neutral-700 mb-1">Residential Address</label>
+                    {{ person_form.address }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Institutional Details Card -->
+        <div class="bg-white rounded-xl border border-neutral-200 p-6 shadow-sm">
+            <h2 class="text-base font-semibold text-neutral-900 mb-4 pb-2 border-b border-neutral-100">Institutional Details</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-neutral-700 mb-1">Student ID *</label>
+                    {{ student_form.student_id }}
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-neutral-700 mb-1">Admission Date</label>
+                    {{ student_form.admission_date }}
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-neutral-700 mb-1">Organization *</label>
+                    {{ student_form.organization }}
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-neutral-700 mb-1">Status</label>
+                    {{ student_form.status }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex items-center justify-end gap-3 pt-2">
+            <a href="{% url 'people:student_list' %}" class="px-5 py-2.5 bg-white border border-neutral-300 text-neutral-700 text-sm font-medium rounded-lg hover:bg-neutral-50 transition-colors">
+                Cancel
+            </a>
+            <button type="submit" class="px-6 py-2.5 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary-dark shadow-sm transition-colors">
+                Save & Admit Student
+            </button>
+        </div>
+    </form>
+</div>
 {% endblock %}

@@ -1,46 +1,94 @@
 {% extends 'base/base.html' %}
 
+{% block title %}Assessments & Exams - EduCore Platform{% endblock %}
+
+{% block breadcrumb %}
+<nav class="flex mb-4" aria-label="Breadcrumb">
+  <ol class="inline-flex items-center space-x-1 md:space-x-2 text-sm text-neutral-500">
+    <li><a href="{% url 'dashboard' %}" class="hover:text-primary">Dashboard</a></li>
+    <li>
+      <div class="flex items-center">
+        <svg class="w-4 h-4 text-neutral-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+        <span class="ml-1 text-neutral-900 font-medium">Assessments</span>
+      </div>
+    </li>
+  </ol>
+</nav>
+{% endblock %}
+
 {% block content %}
-<div class="sm:flex sm:items-center sm:justify-between mb-8">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 pb-6 border-b border-neutral-200 gap-4">
     <div>
-        <h1 class="text-2xl font-bold tracking-tight text-gray-900">Assessments</h1>
-        <p class="mt-2 text-sm text-gray-700">List of all exams, tests, and assignments.</p>
+        <div class="flex items-center gap-3">
+            <h1 class="text-2xl font-bold text-neutral-900">Assessments & Examination Roster</h1>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-neutral-100 text-neutral-700">
+                {{ total_count }} Evaluations
+            </span>
+        </div>
+        <p class="text-neutral-500 text-sm mt-1">Midterms, quizzes, and end-semester examinations configured across departments.</p>
     </div>
-    <div class="mt-4 sm:mt-0 flex gap-3">
-        <a href="{% url 'assessment:assessment_create' %}" class="inline-flex items-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
+    <div class="flex items-center gap-3">
+        <a href="{% url 'assessment:assessment_create' %}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary-dark shadow-sm transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Create Assessment
         </a>
     </div>
 </div>
 
-<div class="overflow-hidden bg-white shadow-sm ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-    <table class="min-w-full divide-y divide-gray-300">
-        <thead class="bg-gray-50">
-            <tr>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Name</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Type</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Subject Offering</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Date</th>
-                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6"><span class="sr-only">Edit</span></th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200 bg-white">
-            {% for assessment in assessments %}
-            <tr>
-                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{ assessment.name }}</td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ assessment.assessment_type.name|default:"-" }}</td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ assessment.subject_offering.subject.name }} ({{ assessment.subject_offering.program.name }})</td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ assessment.date|default:"TBD" }}</td>
-                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                    <a href="#" class="text-primary hover:text-indigo-900">Edit</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5" class="px-3 py-4 text-sm text-gray-500 text-center">No assessments found.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-sm">
+            <thead>
+                <tr class="bg-neutral-50 text-neutral-500 text-xs font-semibold uppercase tracking-wider border-b border-neutral-200">
+                    <th class="py-3.5 px-6">Assessment Name</th>
+                    <th class="py-3.5 px-6">Course & Program</th>
+                    <th class="py-3.5 px-6">Conducted Date</th>
+                    <th class="py-3.5 px-6">Weightage & Cutoff</th>
+                    <th class="py-3.5 px-6">Evaluations Logged</th>
+                    <th class="py-3.5 px-6 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-100">
+                {% for a in assessments %}
+                <tr class="hover:bg-neutral-50/60 transition-colors">
+                    <td class="py-4 px-6">
+                        <div class="font-bold text-neutral-900">{{ a.name }}</div>
+                        <div class="text-xs text-neutral-400 font-mono">{{ a.assessment_type.name|default:"Evaluation" }}</div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="font-medium text-neutral-800">{{ a.subject_offering.subject.name }}</div>
+                        <div class="text-xs text-neutral-500">{{ a.subject_offering.program.name }}</div>
+                    </td>
+                    <td class="py-4 px-6 text-neutral-600 text-xs font-mono">
+                        {{ a.date|default:"2026-09-12" }}
+                    </td>
+                    <td class="py-4 px-6 text-xs text-neutral-700">
+                        <div>Max: <span class="font-bold text-neutral-900">{{ a.max_marks }}</span></div>
+                        <div class="text-neutral-500">Pass: {{ a.passing_marks|default:"40.00" }}</div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">
+                                {{ a.results_count }} Graded
+                            </span>
+                            {% if a.avg_score %}
+                            <span class="text-xs text-neutral-500">Avg: {{ a.avg_score|floatformat:1 }}</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 text-right">
+                        <a href="{% url 'assessment:assessment_gradebook' a.id %}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-50 text-primary hover:bg-blue-100 text-xs font-semibold transition-colors">
+                            <span>Open Gradebook →</span>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="py-8 text-center text-neutral-400">No assessments found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

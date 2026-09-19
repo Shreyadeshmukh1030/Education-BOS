@@ -1,14 +1,61 @@
 import React from 'react';
+import { useQueries } from '@tanstack/react-query';
 import { Card, CardContent } from '../components/ui/Card';
-import { Users, GraduationCap, Building, CalendarCheck } from 'lucide-react';
+import { Users, GraduationCap, Building, CalendarCheck, AlertCircle } from 'lucide-react';
+import api from '../services/api';
+import { queryKeys } from '../services/queries';
 
 export const Dashboard = () => {
+  const fetchStats = async (endpoint) => {
+    const response = await api.get(`${endpoint}stats/`);
+    return response.data;
+  };
+
+  const results = useQueries({
+    queries: [
+      {
+        queryKey: queryKeys.stats.model('learners'),
+        queryFn: () => fetchStats('people/studentprofiles/')
+      },
+      {
+        queryKey: queryKeys.stats.model('instructors'),
+        queryFn: () => fetchStats('people/instructorprofiles/')
+      },
+      {
+        queryKey: queryKeys.stats.model('programs'),
+        queryFn: () => fetchStats('academics/programs/')
+      }
+    ]
+  });
+
+  const isLoading = results.some(result => result.isLoading);
+  const isError = results.some(result => result.isError);
+
+  const [learnersData, instructorsData, programsData] = results.map(r => r.data || { total: 0, active: 0 });
+
   const stats = [
-    { name: 'Total Learners', stat: '12,450', icon: Users, change: '12%', changeType: 'increase' },
-    { name: 'Active Instructors', stat: '428', icon: GraduationCap, change: '2.5%', changeType: 'increase' },
-    { name: 'Active Programs', stat: '36', icon: Building, change: '0%', changeType: 'neutral' },
-    { name: 'Attendance Rate', stat: '87.4%', icon: CalendarCheck, change: '1.2%', changeType: 'decrease' },
+    { name: 'Total Learners', stat: learnersData.total, icon: Users, change: 'Active: ' + learnersData.active, changeType: 'increase' },
+    { name: 'Active Instructors', stat: instructorsData.total, icon: GraduationCap, change: 'Active: ' + instructorsData.active, changeType: 'increase' },
+    { name: 'Active Programs', stat: programsData.total, icon: Building, change: 'Active: ' + programsData.active, changeType: 'neutral' },
+    { name: 'Attendance Rate', stat: '87.4%', icon: CalendarCheck, change: '↓ 1.2%', changeType: 'decrease' },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center p-24">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 text-red-500 bg-red-50 rounded-lg border border-red-100">
+        <AlertCircle className="h-8 w-8 mb-2" />
+        <p>Failed to load dashboard metrics. Please check your connection.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -28,13 +75,12 @@ export const Dashboard = () => {
                 <div className="ml-5 w-0 flex-1">
                   <dl>
                     <dt className="text-sm font-medium text-gray-500 truncate">{item.name}</dt>
-                    <dd className="flex items-baseline">
+                    <dd className="flex items-baseline mt-1">
                       <div className="text-2xl font-semibold text-gray-900">{item.stat}</div>
-                      <div className={`ml-2 flex items-baseline text-sm font-semibold ${
+                      <div className={`ml-3 flex items-baseline text-xs font-medium ${
                         item.changeType === 'increase' ? 'text-green-600' : item.changeType === 'decrease' ? 'text-red-600' : 'text-gray-500'
                       }`}>
-                        {item.changeType === 'increase' ? '↑' : item.changeType === 'decrease' ? '↓' : ''}
-                        <span className="ml-1">{item.change}</span>
+                        <span className="ml-1 bg-gray-100 px-2 py-0.5 rounded-full">{item.change}</span>
                       </div>
                     </dd>
                   </dl>

@@ -1,4 +1,3 @@
-import { MODULES } from './modules';
 import { 
   LayoutDashboard, 
   Users, 
@@ -75,10 +74,10 @@ export const navigationItems = [
   }
 ];
 
-export const getEnabledNavigation = () => {
+export const getEnabledNavigation = (modules = []) => {
   return navigationItems.filter(item => {
     if (item.alwaysVisible) return true;
-    if (item.module && MODULES[item.module]?.enabled) return true;
+    if (item.module && modules.some(m => m.key === item.module)) return true;
     return false;
   });
 };

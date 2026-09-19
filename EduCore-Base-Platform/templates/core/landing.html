@@ -1,0 +1,1023 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduCore — Complete Education Management Platform & LMS</title>
+    <meta name="description" content="EduCore is a comprehensive Education Management + LMS platform for schools, colleges and universities. Manage learning, empower people, track progress.">
+
+    <!-- Google Fonts: Inter & Caveat for the handwriting doodle -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        handwriting: ['Caveat', 'cursive'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Alpine.js for interactive modals and dropdowns -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <style>
+        [x-cloak] { display: none !important; }
+        .gradient-mask-bottom {
+            mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+        }
+    </style>
+</head>
+<body class="font-sans text-slate-900 bg-white antialiased selection:bg-brand-500 selection:text-white" x-data="{ demoModalOpen: false, solutionsOpen: false }">
+
+    <!-- ========================================== -->
+    <!-- 1. TOP NAVIGATION BAR                      -->
+    <!-- ========================================== -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- Brand Logo -->
+            <a href="{% url 'landing' %}" class="flex items-center gap-2.5 group">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                    <!-- Graduation Cap Icon -->
+                    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                        <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18C5 19.94 8.13 22.18 12 22.18C15.87 22.18 19 19.94 19 17.18V13.18L12 17L5 13.18Z"/>
+                    </svg>
+                </div>
+                <span class="text-2xl font-bold tracking-tight text-slate-900">Edu<span class="text-blue-600">Core</span></span>
+            </a>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+                <!-- Home (Active with blue underline indicator) -->
+                <a href="{% url 'landing' %}" class="text-slate-900 font-semibold relative py-1">
+                    Home
+                    <span class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 rounded-full"></span>
+                </a>
+                
+                <a href="#features" class="hover:text-blue-600 transition-colors">Features</a>
+
+                <!-- Solutions Dropdown -->
+                <div class="relative" @click.away="solutionsOpen = false">
+                    <button @click="solutionsOpen = !solutionsOpen" class="flex items-center gap-1 hover:text-blue-600 transition-colors focus:outline-none">
+                        <span>Solutions</span>
+                        <svg class="w-4 h-4 text-slate-400 transition-transform" :class="{'rotate-180': solutionsOpen}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div x-show="solutionsOpen" x-cloak
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 translate-y-2"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 translate-y-2"
+                         class="absolute top-full mt-3 -left-4 w-72 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 z-50">
+                        <a href="#features" @click="solutionsOpen = false" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition">
+                            <div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">🎓</div>
+                            <div>
+                                <div class="text-sm font-semibold text-slate-800">Universities & Colleges</div>
+                                <div class="text-xs text-slate-500">Autonomous & Affiliated campus ERP</div>
+                            </div>
+                        </a>
+                        <a href="#features" @click="solutionsOpen = false" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition">
+                            <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm">🏫</div>
+                            <div>
+                                <div class="text-sm font-semibold text-slate-800">Schools & K-12</div>
+                                <div class="text-xs text-slate-500">CBSE, ICSE & State Boards</div>
+                            </div>
+                        </a>
+                        <a href="#features" @click="solutionsOpen = false" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition">
+                            <div class="w-9 h-9 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm">💡</div>
+                            <div>
+                                <div class="text-sm font-semibold text-slate-800">Training & EdTech</div>
+                                <div class="text-xs text-slate-500">Bootcamps & Vocational institutes</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="#pricing" class="hover:text-blue-600 transition-colors">Pricing</a>
+                <a href="#about" class="hover:text-blue-600 transition-colors">About</a>
+                <a href="#contact" class="hover:text-blue-600 transition-colors">Contact</a>
+            </nav>
+
+            <!-- Right CTA Buttons -->
+            <div class="flex items-center gap-3">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 shadow-sm shadow-blue-500/20 transition-all">
+                        <span>Go to Dashboard</span>
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="px-5 py-2 rounded-lg border border-slate-200 text-slate-700 text-sm font-semibold hover:bg-slate-50 hover:border-slate-300 transition-colors">
+                        Login
+                    </a>
+                    <a href="{% url 'accounts:login' %}" class="px-5 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 shadow-sm shadow-blue-500/20 transition-all">
+                        Get Started Free
+                    </a>
+                {% endif %}
+            </div>
+
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- 2. HERO SECTION                            -->
+    <!-- ========================================== -->
+    <section class="relative pt-8 pb-16 lg:pt-14 lg:pb-24 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+                
+                <!-- Left Content Column -->
+                <div class="lg:col-span-6 space-y-6">
+                    
+                    <!-- Pill Tag -->
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-700 text-xs font-semibold">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>Complete Education Management Platform</span>
+                    </div>
+
+                    <!-- Main Headline -->
+                    <h1 class="text-4xl sm:text-5xl lg:text-[54px] font-black text-slate-900 tracking-tight leading-[1.12]">
+                        Manage Learning.<br>
+                        Empower People.<br>
+                        Track Progress.
+                    </h1>
+
+                    <!-- Description Body -->
+                    <p class="text-slate-600 text-base sm:text-lg leading-relaxed max-w-xl">
+                        EduCore is a comprehensive Education Management + LMS platform for schools, colleges and training institutes. Simplify administration, streamline learning and build a brighter future.
+                    </p>
+
+                    <!-- CTA Buttons -->
+                    <div class="pt-2 flex flex-wrap items-center gap-4">
+                        <a href="{% url 'accounts:login' %}" class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 shadow-lg shadow-blue-600/25 transition-all hover:-translate-y-0.5">
+                            <span>Get Started Free</span>
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </a>
+
+                        <button @click="demoModalOpen = true" class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-700 text-sm font-bold hover:bg-slate-50 hover:border-slate-400 transition-all hover:-translate-y-0.5 shadow-sm">
+                            <div class="w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+                                <svg class="w-3 h-3 fill-current ml-0.5" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </div>
+                            <span>Watch Demo</span>
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Right Hero Visual Column -->
+                <div class="lg:col-span-6 relative">
+                    
+                    <!-- Main Hero Image Frame -->
+                    <div class="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-100 group">
+                        <img src="{% static 'images/hero_students.jpg' %}" 
+                             alt="EduCore University Students in Library" 
+                             class="w-full h-[420px] sm:h-[480px] object-cover object-center group-hover:scale-102 transition-transform duration-700">
+                        
+                        <!-- Subtle gradient overlay at bottom -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-black/10 pointer-events-none"></div>
+
+                        <!-- Handwritten Script Overlay & Doodle Arrow -->
+                        <div class="absolute top-6 right-8 text-right pointer-events-none z-10">
+                            <div class="font-handwriting text-white text-3xl sm:text-4xl font-bold leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] rotate-[-4deg]">
+                                Better<br>
+                                Education,<br>
+                                Brighter<br>
+                                Future
+                            </div>
+                            <!-- Curved hand-drawn doodle arrow SVG -->
+                            <svg class="w-16 h-16 ml-auto mt-1 text-white/90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                                <path d="M70 10 C 60 40, 25 35, 20 70" />
+                                <path d="M10 60 L 20 70 L 32 62" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Floating Frosted Pill Feature Card -->
+                    <div class="absolute -bottom-6 sm:bottom-6 right-2 sm:-right-6 bg-white/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 shadow-2xl border border-white/80 w-[240px] sm:w-[260px] z-20 transition-all hover:scale-102">
+                        <div class="space-y-3">
+                            <!-- Item 1 -->
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18C5 19.94 8.13 22.18 12 22.18C15.87 22.18 19 19.94 19 17.18V13.18L12 17L5 13.18Z"/></svg>
+                                </div>
+                                <span class="text-xs font-semibold text-slate-800">Academic Management</span>
+                            </div>
+                            <!-- Item 2 -->
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+                                </div>
+                                <span class="text-xs font-semibold text-slate-800">Learning Management</span>
+                            </div>
+                            <!-- Item 3 -->
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/></svg>
+                                </div>
+                                <span class="text-xs font-semibold text-slate-800">Attendance & Assessment</span>
+                            </div>
+                            <!-- Item 4 -->
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0 font-bold text-xs">
+                                    ₹
+                                </div>
+                                <span class="text-xs font-semibold text-slate-800">Finance & Fees</span>
+                            </div>
+                            <!-- Item 5 -->
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+                                </div>
+                                <span class="text-xs font-semibold text-slate-800">Communication</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 3. HORIZONTAL FEATURE ICON STRIP           -->
+    <!-- ========================================== -->
+    <section id="features" class="border-y border-slate-100 bg-slate-50/50 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-6 text-center">
+                
+                <!-- Card 1: Student Management -->
+                <div class="flex flex-col items-center group p-2">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-100/80 text-blue-600 flex items-center justify-center mb-3 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18C5 19.94 8.13 22.18 12 22.18C15.87 22.18 19 19.94 19 17.18V13.18L12 17L5 13.18Z"/></svg>
+                    </div>
+                    <h2 class="text-xs font-bold text-slate-900 leading-tight">Student Management</h2>
+                    <p class="text-[11px] text-slate-500 mt-1">Complete student lifecycle</p>
+                </div>
+
+                <!-- Card 2: Faculty Management -->
+                <div class="flex flex-col items-center group p-2">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-100/80 text-emerald-600 flex items-center justify-center mb-3 group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-sm">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                    </div>
+                    <h2 class="text-xs font-bold text-slate-900 leading-tight">Faculty Management</h2>
+                    <p class="text-[11px] text-slate-500 mt-1">Assign, track, empower</p>
+                </div>
+
+                <!-- Card 3: Course & Curriculum -->
+                <div class="flex flex-col items-center group p-2">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-100/80 text-purple-600 flex items-center justify-center mb-3 group-hover:bg-purple-600 group-hover:text-white transition-all shadow-sm">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+                    </div>
+                    <h2 class="text-xs font-bold text-slate-900 leading-tight">Course & Curriculum</h2>
+                    <p class="text-[11px] text-slate-500 mt-1">Flexible and customizable</p>
+                </div>
+
+                <!-- Card 4: Attendance & Timetable -->
+                <div class="flex flex-col items-center group p-2">
+                    <div class="w-12 h-12 rounded-2xl bg-teal-100/80 text-teal-600 flex items-center justify-center mb-3 group-hover:bg-teal-600 group-hover:text-white transition-all shadow-sm">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                    </div>
+                    <h2 class="text-xs font-bold text-slate-900 leading-tight">Attendance & Timetable</h2>
+                    <p class="text-[11px] text-slate-500 mt-1">Stay on schedule</p>
+                </div>
+
+                <!-- Card 5: Assessments & Results -->
+                <div class="flex flex-col items-center group p-2">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-100/80 text-blue-600 flex items-center justify-center mb-3 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-2 14l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                    </div>
+                    <h2 class="text-xs font-bold text-slate-900 leading-tight">Assessments & Results</h2>
+                    <p class="text-[11px] text-slate-500 mt-1">Track performance</p>
+                </div>
+
+                <!-- Card 6: Fee & Payment Management -->
+                <div class="flex flex-col items-center group p-2">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-100/80 text-amber-600 flex items-center justify-center mb-3 group-hover:bg-amber-600 group-hover:text-white transition-all shadow-sm">
+                        <span class="text-xl font-black">₹</span>
+                    </div>
+                    <h2 class="text-xs font-bold text-slate-900 leading-tight">Fee & Payment Management</h2>
+                    <p class="text-[11px] text-slate-500 mt-1">Simplify financial operations</p>
+                </div>
+
+                <!-- Card 7: Communication -->
+                <div class="flex flex-col items-center group p-2 col-span-2 sm:col-span-1">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-100/80 text-purple-600 flex items-center justify-center mb-3 group-hover:bg-purple-600 group-hover:text-white transition-all shadow-sm">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+                    </div>
+                    <h2 class="text-xs font-bold text-slate-900 leading-tight">Communication</h2>
+                    <p class="text-[11px] text-slate-500 mt-1">Connect & engage</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 4. EVERYTHING YOU NEED IN ONE PLATFORM     -->
+    <!-- ========================================== -->
+    <section class="py-16 lg:py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Left Mockup Canvas (EduCore Real Dashboard Preview) -->
+                <div class="lg:col-span-7">
+                    <div class="rounded-2xl border border-slate-200/80 shadow-2xl bg-slate-900 overflow-hidden text-slate-800 transition-all hover:shadow-blue-500/10">
+                        
+                        <!-- Window Chrome Topbar -->
+                        <div class="bg-slate-950 px-4 py-2.5 flex items-center justify-between border-b border-slate-800">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
+                                <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
+                                <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+                                <span class="text-[11px] text-slate-400 font-mono ml-2">app.educore.in/dashboard</span>
+                            </div>
+                            <span class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">EduCore Live BOS</span>
+                        </div>
+
+                        <!-- Main Inner Interface -->
+                        <div class="grid grid-cols-12 bg-slate-50 min-h-[440px]">
+                            
+                            <!-- Mock Sidebar -->
+                            <div class="col-span-3 bg-[#0c1626] text-slate-300 p-3 flex flex-col justify-between hidden sm:flex">
+                                <div class="space-y-4">
+                                    <!-- App Brand -->
+                                    <div class="flex items-center gap-2 px-2 py-1">
+                                        <div class="w-6 h-6 rounded bg-blue-600 flex items-center justify-center text-white text-xs">🎓</div>
+                                        <span class="font-bold text-sm text-white">EduCore</span>
+                                    </div>
+
+                                    <!-- Nav Items -->
+                                    <div class="space-y-1 text-[11px] font-medium">
+                                        <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-blue-600 text-white font-semibold">
+                                            <span>📊</span> Dashboard
+                                        </div>
+                                        <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-slate-800 text-slate-400">
+                                            <span>👨‍🎓</span> Students
+                                        </div>
+                                        <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-slate-800 text-slate-400">
+                                            <span>👩‍🏫</span> Instructors
+                                        </div>
+                                        <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-slate-800 text-slate-400">
+                                            <span>🏛️</span> Academics
+                                        </div>
+                                        <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-slate-800 text-slate-400">
+                                            <span>📋</span> Enrollment
+                                        </div>
+                                        <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-slate-800 text-slate-400">
+                                            <span>📅</span> Attendance
+                                        </div>
+                                        <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-slate-800 text-slate-400">
+                                            <span>📝</span> Assessment
+                                        </div>
+                                        <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-slate-800 text-slate-400">
+                                            <span>💳</span> Finance
+                                        </div>
+                                        <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-slate-800 text-slate-400">
+                                            <span>💬</span> Communication
+                                        </div>
+                                        <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-slate-800 text-slate-400">
+                                            <span>📈</span> Reports
+                                        </div>
+                                        <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-slate-800 text-slate-400">
+                                            <span>⚙️</span> Settings
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="px-2 pt-2 border-t border-slate-800 text-[10px] text-slate-500">
+                                    v2.4 LTS Enterprise
+                                </div>
+                            </div>
+
+                            <!-- Mock Workspace Area -->
+                            <div class="col-span-12 sm:col-span-9 p-4 space-y-4">
+                                
+                                <!-- Mock Top Header -->
+                                <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                                    <div class="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-400 text-xs w-44">
+                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                        <span class="truncate">Search students...</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] font-semibold bg-blue-50 text-blue-700 px-2 py-1 rounded border border-blue-200">2025 - 2026</span>
+                                        <span class="text-[10px] font-bold bg-blue-600 text-white px-2.5 py-1 rounded shadow-sm">+ Quick Create</span>
+                                        <div class="w-6 h-6 rounded-full bg-slate-800 text-white flex items-center justify-center text-[10px] font-bold">A</div>
+                                    </div>
+                                </div>
+
+                                <!-- Greeting -->
+                                <div>
+                                    <h3 class="text-sm font-bold text-slate-900 leading-tight">Good morning, Admin</h3>
+                                    <p class="text-[11px] text-slate-500">Here's what's happening across your organization.</p>
+                                </div>
+
+                                <!-- 4 Stat Cards Row -->
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                                    <!-- Stat 1 -->
+                                    <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-[10px] text-slate-500 font-medium">Total Students</span>
+                                            <span class="w-4 h-4 rounded bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">👥</span>
+                                        </div>
+                                        <div class="text-base font-bold text-slate-900 mt-1">1,248</div>
+                                        <div class="text-[9px] font-semibold text-emerald-600">▲ 8.4% vs last session</div>
+                                    </div>
+                                    <!-- Stat 2 -->
+                                    <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-[10px] text-slate-500 font-medium">Instructors</span>
+                                            <span class="w-4 h-4 rounded bg-purple-50 text-purple-600 flex items-center justify-center text-[10px]">👩‍🏫</span>
+                                        </div>
+                                        <div class="text-base font-bold text-slate-900 mt-1">85</div>
+                                        <div class="text-[9px] font-semibold text-emerald-600">▲ 5.2% vs last session</div>
+                                    </div>
+                                    <!-- Stat 3 -->
+                                    <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-[10px] text-slate-500 font-medium">Programs</span>
+                                            <span class="w-4 h-4 rounded bg-amber-50 text-amber-600 flex items-center justify-center text-[10px]">🎓</span>
+                                        </div>
+                                        <div class="text-base font-bold text-slate-900 mt-1">12</div>
+                                        <div class="text-[9px] font-semibold text-emerald-600">▲ 10% vs last session</div>
+                                    </div>
+                                    <!-- Stat 4 -->
+                                    <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-[10px] text-slate-500 font-medium">Revenue</span>
+                                            <span class="w-4 h-4 rounded bg-emerald-50 text-emerald-600 flex items-center justify-center text-[10px]">₹</span>
+                                        </div>
+                                        <div class="text-base font-bold text-slate-900 mt-1">₹8,45,000</div>
+                                        <div class="text-[9px] font-semibold text-emerald-600">▲ 13.7% vs last session</div>
+                                    </div>
+                                </div>
+
+                                <!-- 2 Charts Row -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                                    
+                                    <!-- Left Chart: Line Trend -->
+                                    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-[11px] font-bold text-slate-800">Student Enrollment Trend</span>
+                                            <span class="text-[9px] text-slate-400">Monthly</span>
+                                        </div>
+                                        <!-- SVG Line Chart Mockup -->
+                                        <div class="h-28 w-full relative">
+                                            <svg viewBox="0 0 300 110" class="w-full h-full">
+                                                <!-- Grid lines -->
+                                                <line x1="0" y1="20" x2="300" y2="20" stroke="#f1f5f9" stroke-width="1"/>
+                                                <line x1="0" y1="50" x2="300" y2="50" stroke="#f1f5f9" stroke-width="1"/>
+                                                <line x1="0" y1="80" x2="300" y2="80" stroke="#f1f5f9" stroke-width="1"/>
+
+                                                <!-- Gradient Area -->
+                                                <defs>
+                                                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.25"/>
+                                                        <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0"/>
+                                                    </linearGradient>
+                                                </defs>
+                                                
+                                                <path d="M 10 75 Q 40 70, 70 60 T 130 55 T 180 35 T 230 40 T 290 20 L 290 95 L 10 95 Z" fill="url(#chartGradient)" />
+                                                <path d="M 10 75 Q 40 70, 70 60 T 130 55 T 180 35 T 230 40 T 290 20" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>
+                                                
+                                                <!-- Dots -->
+                                                <circle cx="10" cy="75" r="3" fill="#2563eb" stroke="#ffffff" stroke-width="1.5"/>
+                                                <circle cx="70" cy="60" r="3" fill="#2563eb" stroke="#ffffff" stroke-width="1.5"/>
+                                                <circle cx="130" cy="55" r="3" fill="#2563eb" stroke="#ffffff" stroke-width="1.5"/>
+                                                <circle cx="180" cy="35" r="3" fill="#2563eb" stroke="#ffffff" stroke-width="1.5"/>
+                                                <circle cx="230" cy="40" r="3" fill="#2563eb" stroke="#ffffff" stroke-width="1.5"/>
+                                                <circle cx="290" cy="20" r="3.5" fill="#2563eb" stroke="#ffffff" stroke-width="2"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex justify-between text-[8px] text-slate-400 pt-1 font-mono">
+                                            <span>Jan</span><span>Mar</span><span>May</span><span>Jul</span><span>Sep</span><span>Nov</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Right Chart: Donut Program Breakdown -->
+                                    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                                        <div class="text-[11px] font-bold text-slate-800 mb-1">Enrollment by Program</div>
+                                        <div class="flex items-center gap-3">
+                                            <!-- SVG Donut Chart -->
+                                            <div class="relative w-20 h-20 flex-shrink-0">
+                                                <svg viewBox="0 0 36 36" class="w-full h-full transform -rotate-90">
+                                                    <!-- Circle segments -->
+                                                    <circle cx="18" cy="18" r="14" fill="transparent" stroke="#3b82f6" stroke-width="5" stroke-dasharray="42 58" stroke-dashoffset="0"></circle>
+                                                    <circle cx="18" cy="18" r="14" fill="transparent" stroke="#10b981" stroke-width="5" stroke-dasharray="22 78" stroke-dashoffset="-42"></circle>
+                                                    <circle cx="18" cy="18" r="14" fill="transparent" stroke="#f59e0b" stroke-width="5" stroke-dasharray="18 82" stroke-dashoffset="-64"></circle>
+                                                    <circle cx="18" cy="18" r="14" fill="transparent" stroke="#8b5cf6" stroke-width="5" stroke-dasharray="12 88" stroke-dashoffset="-82"></circle>
+                                                    <circle cx="18" cy="18" r="14" fill="transparent" stroke="#ef4444" stroke-width="5" stroke-dasharray="6 94" stroke-dashoffset="-94"></circle>
+                                                </svg>
+                                                <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                                                    <span class="text-[9px] font-bold text-slate-900 leading-none">1,248</span>
+                                                    <span class="text-[6px] text-slate-400">Total</span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Legend list -->
+                                            <div class="space-y-1 text-[9px] text-slate-600 flex-1">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-blue-500"></span> B.Tech</span>
+                                                    <span class="font-bold text-slate-800">42%</span>
+                                                </div>
+                                                <div class="flex items-center justify-between">
+                                                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> BCA</span>
+                                                    <span class="font-bold text-slate-800">22%</span>
+                                                </div>
+                                                <div class="flex items-center justify-between">
+                                                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-500"></span> B.Sc</span>
+                                                    <span class="font-bold text-slate-800">18%</span>
+                                                </div>
+                                                <div class="flex items-center justify-between">
+                                                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-purple-500"></span> B.Com</span>
+                                                    <span class="font-bold text-slate-800">12%</span>
+                                                </div>
+                                                <div class="flex items-center justify-between">
+                                                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-500"></span> Others</span>
+                                                    <span class="font-bold text-slate-800">6%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Right Pitch Content -->
+                <div class="lg:col-span-5 space-y-6">
+                    
+                    <!-- Pill Badge -->
+                    <div class="inline-block px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-blue-600 text-xs font-bold">
+                        Powerful • Flexible • Secure
+                    </div>
+
+                    <!-- Heading -->
+                    <h2 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+                        Everything You Need<br>
+                        in <span class="text-blue-600">One Platform</span>
+                    </h2>
+
+                    <!-- Body Paragraph -->
+                    <p class="text-slate-600 text-base leading-relaxed">
+                        EduCore brings together all aspects of education management with an intuitive and modern interface. Save time, reduce manual work and focus on what matters most — student success.
+                    </p>
+
+                    <!-- 2-Column Feature Checklist -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3.5 gap-x-4 pt-2">
+                        <!-- Left col -->
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-2.5 text-xs font-semibold text-slate-800">
+                                <svg class="w-4 h-4 text-blue-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <span>Role-based access control</span>
+                            </div>
+                            <div class="flex items-center gap-2.5 text-xs font-semibold text-slate-800">
+                                <svg class="w-4 h-4 text-blue-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <span>Real-time analytics & reports</span>
+                            </div>
+                            <div class="flex items-center gap-2.5 text-xs font-semibold text-slate-800">
+                                <svg class="w-4 h-4 text-blue-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <span>Mobile responsive design</span>
+                            </div>
+                            <div class="flex items-center gap-2.5 text-xs font-semibold text-slate-800">
+                                <svg class="w-4 h-4 text-blue-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <span>Secure & reliable</span>
+                            </div>
+                        </div>
+
+                        <!-- Right col -->
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-2.5 text-xs font-semibold text-slate-800">
+                                <svg class="w-4 h-4 text-blue-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <span>Integrated LMS</span>
+                            </div>
+                            <div class="flex items-center gap-2.5 text-xs font-semibold text-slate-800">
+                                <svg class="w-4 h-4 text-blue-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <span>Automated notifications</span>
+                            </div>
+                            <div class="flex items-center gap-2.5 text-xs font-semibold text-slate-800">
+                                <svg class="w-4 h-4 text-blue-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <span>Easy data management</span>
+                            </div>
+                            <div class="flex items-center gap-2.5 text-xs font-semibold text-slate-800">
+                                <svg class="w-4 h-4 text-blue-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <span>Scalable for any institution</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Button -->
+                    <div class="pt-2">
+                        <button @click="demoModalOpen = true" class="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 shadow-md shadow-blue-600/20 transition-all hover:-translate-y-0.5">
+                            <span>Explore All Features</span>
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 5. SOCIAL PROOF / METRICS BAR              -->
+    <!-- ========================================== -->
+    <section class="border-t border-slate-100 bg-slate-50/50 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-slate-200">
+                
+                <div class="pt-4 md:pt-0">
+                    <div class="text-3xl sm:text-4xl font-extrabold text-blue-600 tracking-tight">500+</div>
+                    <div class="text-xs font-semibold text-slate-600 mt-1">Institutions Trust Us</div>
+                </div>
+
+                <div class="pt-4 md:pt-0">
+                    <div class="text-3xl sm:text-4xl font-extrabold text-blue-600 tracking-tight">50,000+</div>
+                    <div class="text-xs font-semibold text-slate-600 mt-1">Students Enrolled</div>
+                </div>
+
+                <div class="pt-4 md:pt-0">
+                    <div class="text-3xl sm:text-4xl font-extrabold text-blue-600 tracking-tight">10,000+</div>
+                    <div class="text-xs font-semibold text-slate-600 mt-1">Active Instructors</div>
+                </div>
+
+                <div class="pt-4 md:pt-0">
+                    <div class="text-3xl sm:text-4xl font-extrabold text-blue-600 tracking-tight">99.9%</div>
+                    <div class="text-xs font-semibold text-slate-600 mt-1">System Uptime</div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 6. PRICING & EDITIONS                      -->
+    <!-- ========================================== -->
+    <section id="pricing" class="py-16 lg:py-24 bg-white border-t border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider bg-blue-50 px-3.5 py-1 rounded-full">Transparent Pricing</span>
+                <h2 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mt-3">Simple Plans for Every Institution</h2>
+                <p class="text-slate-600 text-sm mt-2">Scale seamlessly from single-department institutes to multi-campus state universities.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Starter Plan -->
+                <div class="rounded-2xl border border-slate-200 p-8 hover:border-slate-300 transition-all bg-white shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Standard School</h3>
+                        <p class="text-xs text-slate-500 mt-1">For single-campus schools and coaching centers.</p>
+                        <div class="my-6">
+                            <span class="text-3xl font-extrabold text-slate-900">₹14,999</span>
+                            <span class="text-xs text-slate-500">/ academic year</span>
+                        </div>
+                        <ul class="space-y-3 text-xs text-slate-600 border-t border-slate-100 pt-6">
+                            <li class="flex items-center gap-2">✓ Up to 500 Students</li>
+                            <li class="flex items-center gap-2">✓ Student Directory & Admissions</li>
+                            <li class="flex items-center gap-2">✓ Attendance & Daily Timetables</li>
+                            <li class="flex items-center gap-2">✓ Fee Receipts & Invoicing</li>
+                            <li class="flex items-center gap-2">✓ Email & SMS Alerts</li>
+                        </ul>
+                    </div>
+                    <div class="pt-8">
+                        <a href="{% url 'accounts:login' %}" class="w-full block text-center py-2.5 px-4 rounded-xl border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-50 transition">Get Started</a>
+                    </div>
+                </div>
+
+                <!-- Pro Plan (Featured) -->
+                <div class="rounded-2xl border-2 border-blue-600 p-8 shadow-xl relative bg-white flex flex-col justify-between">
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                        Most Popular
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Collegiate Pro</h3>
+                        <p class="text-xs text-slate-500 mt-1">For colleges, polytechnics & university departments.</p>
+                        <div class="my-6">
+                            <span class="text-3xl font-extrabold text-slate-900">₹49,999</span>
+                            <span class="text-xs text-slate-500">/ academic year</span>
+                        </div>
+                        <ul class="space-y-3 text-xs text-slate-600 border-t border-slate-100 pt-6">
+                            <li class="flex items-center gap-2 font-semibold text-slate-800">✓ Up to 3,000 Students</li>
+                            <li class="flex items-center gap-2">✓ Everything in Standard School</li>
+                            <li class="flex items-center gap-2">✓ Credit System & Program Semesters</li>
+                            <li class="flex items-center gap-2">✓ Interactive Faculty Gradebook</li>
+                            <li class="flex items-center gap-2">✓ Student & Parent Self-Service Portals</li>
+                            <li class="flex items-center gap-2">✓ Online Fee Simulation & Ledger</li>
+                        </ul>
+                    </div>
+                    <div class="pt-8">
+                        <a href="{% url 'accounts:login' %}" class="w-full block text-center py-2.5 px-4 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 shadow-md shadow-blue-500/20 transition">Launch Campus Pro</a>
+                    </div>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="rounded-2xl border border-slate-200 p-8 hover:border-slate-300 transition-all bg-white shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">University BOS</h3>
+                        <p class="text-xs text-slate-500 mt-1">Multi-campus institutes & group universities.</p>
+                        <div class="my-6">
+                            <span class="text-3xl font-extrabold text-slate-900">Custom</span>
+                            <span class="text-xs text-slate-500">enterprise quotation</span>
+                        </div>
+                        <ul class="space-y-3 text-xs text-slate-600 border-t border-slate-100 pt-6">
+                            <li class="flex items-center gap-2">✓ Unlimited Students & Faculty</li>
+                            <li class="flex items-center gap-2">✓ Multi-Tenant Campus Isolation</li>
+                            <li class="flex items-center gap-2">✓ UGC/AICTE NAAC Audit Trail Export</li>
+                            <li class="flex items-center gap-2">✓ Single Sign-On (SSO) & LDAP</li>
+                            <li class="flex items-center gap-2">✓ Dedicated Account Manager & 24/7 SLA</li>
+                        </ul>
+                    </div>
+                    <div class="pt-8">
+                        <button @click="demoModalOpen = true" class="w-full block text-center py-2.5 px-4 rounded-xl border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-50 transition">Request Enterprise Demo</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 7. DEMO / ROLE SWITCHER MODAL              -->
+    <!-- ========================================== -->
+    <div x-show="demoModalOpen" x-cloak
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm">
+        
+        <div @click.away="demoModalOpen = false" 
+             class="bg-white rounded-3xl shadow-2xl border border-slate-100 max-w-xl w-full p-6 sm:p-8 relative">
+            
+            <!-- Close Button -->
+            <button @click="demoModalOpen = false" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 focus:outline-none">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+
+            <!-- Modal Header -->
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-3 text-xl">🚀</div>
+                <h3 class="text-2xl font-black text-slate-900">Experience EduCore Live</h3>
+                <p class="text-slate-500 text-xs mt-1">Select a pre-configured role to immediately explore the system:</p>
+            </div>
+
+            <!-- Pre-configured Personas Grid -->
+            <div class="space-y-2.5">
+                
+                <!-- Super Admin -->
+                <a href="{% url 'accounts:login' %}?demo_user=admin&demo_pass=admin" class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-blue-500 hover:bg-blue-50/50 transition group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">👑</div>
+                        <div>
+                            <div class="text-sm font-bold text-slate-900 group-hover:text-blue-600">Super Administrator</div>
+                            <div class="text-[11px] text-slate-500">Executive metrics, academics, security & audits</div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-semibold text-blue-600 bg-blue-100/50 px-2.5 py-1 rounded-lg">Login as Admin →</span>
+                </a>
+
+                <!-- Faculty / Instructor -->
+                <a href="{% url 'accounts:login' %}?demo_user=inst0&demo_pass=password123" class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">👩‍🏫</div>
+                        <div>
+                            <div class="text-sm font-bold text-slate-900 group-hover:text-emerald-600">Prof. Rahul Sharma (Faculty)</div>
+                            <div class="text-[11px] text-slate-500">Attendance marking, gradebook, subject offerings</div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-semibold text-emerald-600 bg-emerald-100/50 px-2.5 py-1 rounded-lg">Login as Faculty →</span>
+                </a>
+
+                <!-- Student -->
+                <a href="{% url 'accounts:login' %}?demo_user=stu0&demo_pass=password123" class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-purple-500 hover:bg-purple-50/50 transition group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-sm">👨‍🎓</div>
+                        <div>
+                            <div class="text-sm font-bold text-slate-900 group-hover:text-purple-600">Aarav Sharma (B.Tech Student)</div>
+                            <div class="text-[11px] text-slate-500">Curriculum, grades, fee receipts, student dossier</div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-semibold text-purple-600 bg-purple-100/50 px-2.5 py-1 rounded-lg">Login as Student →</span>
+                </a>
+
+                <!-- Parent -->
+                <a href="{% url 'accounts:login' %}?demo_user=parent0&demo_pass=password123" class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-amber-500 hover:bg-amber-50/50 transition group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">👨‍👩‍👧</div>
+                        <div>
+                            <div class="text-sm font-bold text-slate-900 group-hover:text-amber-600">Amit Patel (Parent)</div>
+                            <div class="text-[11px] text-slate-500">Child's attendance, progress reports, fee payments</div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-semibold text-amber-600 bg-amber-100/50 px-2.5 py-1 rounded-lg">Login as Parent →</span>
+                </a>
+
+                <!-- Accountant -->
+                <a href="{% url 'accounts:login' %}?demo_user=accountant&demo_pass=password123" class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-rose-500 hover:bg-rose-50/50 transition group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-sm">💼</div>
+                        <div>
+                            <div class="text-sm font-bold text-slate-900 group-hover:text-rose-600">Ramesh Gupta (Finance Officer)</div>
+                            <div class="text-[11px] text-slate-500">Invoices, offline payment entry, fee structures</div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-semibold text-rose-600 bg-rose-100/50 px-2.5 py-1 rounded-lg">Login as Finance →</span>
+                </a>
+
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-100 text-center">
+                <a href="{% url 'accounts:login' %}" class="text-xs text-slate-500 hover:text-blue-600 font-medium">Or log in with custom credentials →</a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 8. ABOUT & CONTACT SECTION                 -->
+    <!-- ========================================== -->
+    <section id="about" class="py-16 bg-slate-50 border-t border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="text-xs font-bold text-blue-600 uppercase tracking-wider bg-blue-50 px-3.5 py-1 rounded-full">Designed for Indian Higher Education</span>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight mt-3">Built to UGC, AICTE & NAAC Guidelines</h2>
+                    <p class="text-slate-600 text-sm leading-relaxed mt-4">
+                        EduCore was engineered from the ground up to solve the real administrative friction in Indian schools and universities. From Choice Based Credit Systems (CBCS), INR fee ledgers with GST invoices, to automated UGC audit logs and multi-program timetables.
+                    </p>
+                    <div class="mt-6 flex flex-wrap gap-4 text-xs font-semibold text-slate-700">
+                        <span class="bg-white border border-slate-200 px-3.5 py-2 rounded-xl">✓ NAAC Criterion 1-7 Ready</span>
+                        <span class="bg-white border border-slate-200 px-3.5 py-2 rounded-xl">✓ NEP 2020 Framework Compatible</span>
+                        <span class="bg-white border border-slate-200 px-3.5 py-2 rounded-xl">✓ ISO 27001 Data Privacy</span>
+                    </div>
+                </div>
+
+                <div id="contact" class="bg-white rounded-3xl p-8 border border-slate-200 shadow-md">
+                    <h3 class="text-xl font-bold text-slate-900">Request an Institutional Walkthrough</h3>
+                    <p class="text-xs text-slate-500 mt-1">Our academic consultants will demonstrate EduCore customized for your campus.</p>
+                    
+                    <form onsubmit="event.preventDefault(); alert('Thank you for reaching out! Our academic solutions specialist will contact your institution within 24 business hours.');" class="mt-6 space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Institution Name</label>
+                            <input type="text" required placeholder="e.g. National Institute of Technology" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-600">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Your Name</label>
+                                <input type="text" required placeholder="Dean / Registrar" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-600">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Official Email</label>
+                                <input type="email" required placeholder="registrar@campus.ac.in" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-600">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Estimated Students</label>
+                            <select class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-600 text-slate-600">
+                                <option>500 - 2,000 Students</option>
+                                <option>2,000 - 10,000 Students</option>
+                                <option>10,000+ Students (Multi-Campus)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full py-3 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 shadow-md shadow-blue-500/20 transition">Schedule Campus Demo →</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 9. SAAS FOOTER                             -->
+    <!-- ========================================== -->
+    <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-8 pb-10 border-b border-slate-800">
+                
+                <!-- Col 1: Brand Info -->
+                <div class="col-span-2 space-y-4">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white text-sm">🎓</div>
+                        <span class="text-xl font-bold text-white">Edu<span class="text-blue-500">Core</span></span>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed max-w-sm">
+                        EduCore is the comprehensive Education Management + LMS platform designed for modern schools, autonomous colleges and state universities.
+                    </p>
+                    <div class="text-xs text-slate-500">
+                        Made with pride in India for modern education.
+                    </div>
+                </div>
+
+                <!-- Col 2: Platform -->
+                <div class="space-y-3">
+                    <div class="text-xs font-bold text-white uppercase tracking-wider">Platform</div>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="#features" class="hover:text-white transition">Student Dossier</a></li>
+                        <li><a href="#features" class="hover:text-white transition">Attendance Grid</a></li>
+                        <li><a href="#features" class="hover:text-white transition">Assessment Hub</a></li>
+                        <li><a href="#features" class="hover:text-white transition">Fee Ledgers</a></li>
+                        <li><a href="#features" class="hover:text-white transition">Timetable Engine</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Institutional Roles -->
+                <div class="space-y-3">
+                    <div class="text-xs font-bold text-white uppercase tracking-wider">Personas</div>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="{% url 'accounts:login' %}?demo_user=admin&demo_pass=admin" class="hover:text-white transition">Super Admin</a></li>
+                        <li><a href="{% url 'accounts:login' %}?demo_user=inst0&demo_pass=password123" class="hover:text-white transition">Faculty Portal</a></li>
+                        <li><a href="{% url 'accounts:login' %}?demo_user=stu0&demo_pass=password123" class="hover:text-white transition">Student Portal</a></li>
+                        <li><a href="{% url 'accounts:login' %}?demo_user=parent0&demo_pass=password123" class="hover:text-white transition">Parent Portal</a></li>
+                        <li><a href="{% url 'accounts:login' %}?demo_user=accountant&demo_pass=password123" class="hover:text-white transition">Finance & Accounts</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Compliance & Legal -->
+                <div class="space-y-3">
+                    <div class="text-xs font-bold text-white uppercase tracking-wider">Compliance</div>
+                    <ul class="space-y-2 text-xs">
+                        <li><span class="text-slate-400">UGC & AICTE Compliant</span></li>
+                        <li><span class="text-slate-400">CBCS Semester Model</span></li>
+                        <li><span class="text-slate-400">Security & RBAC</span></li>
+                        <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition">Terms of Service</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+                <div>
+                    &copy; 2026 EduCore Base Platform. All rights reserved.
+                </div>
+                <div class="flex items-center gap-6">
+                    <a href="{% url 'landing' %}" class="hover:text-white transition">Home</a>
+                    <a href="#features" class="hover:text-white transition">Features</a>
+                    <a href="#pricing" class="hover:text-white transition">Pricing</a>
+                    <a href="{% url 'accounts:login' %}" class="hover:text-white transition">Login</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

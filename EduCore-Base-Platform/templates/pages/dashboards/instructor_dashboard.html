@@ -1,0 +1,181 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Instructor Dashboard - EduCore Platform{% endblock %}
+
+{% block breadcrumb %}
+<nav class="flex mb-4" aria-label="Breadcrumb">
+  <ol class="inline-flex items-center space-x-1 md:space-x-2 text-sm text-neutral-500">
+    <li class="inline-flex items-center">
+      <span class="text-neutral-900 font-medium">Faculty Portal</span>
+    </li>
+    <li>
+      <div class="flex items-center">
+        <svg class="w-4 h-4 text-neutral-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+        <span class="ml-1 text-neutral-500">My Teaching Workspace</span>
+      </div>
+    </li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<!-- Instructor Header -->
+<div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 pb-6 border-b border-neutral-200 gap-4">
+    <div>
+        <div class="flex items-center gap-3">
+            <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900">Welcome, Professor {{ user.first_name }} {{ user.last_name }}</h1>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                Faculty
+            </span>
+        </div>
+        <p class="text-neutral-500 mt-1">
+            Department of Computer Science • ID: {{ instructor.employee_id|default:"EMP1000" }} • Current Session {{ current_session.name|default:"2026-2027" }}
+        </p>
+    </div>
+    <div class="flex items-center gap-3">
+        <a href="{% url 'operations:attendance_mark' %}" class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-dark shadow-sm transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Mark Attendance
+        </a>
+        <a href="{% url 'assessment:assessment_create' %}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-neutral-300 text-neutral-700 text-sm font-medium rounded-lg hover:bg-neutral-50 shadow-sm transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            New Assessment
+        </a>
+    </div>
+</div>
+
+<!-- Stat Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+    <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm">
+        <span class="text-sm font-medium text-neutral-500">My Subjects</span>
+        <div class="text-2xl font-bold text-neutral-900 mt-2">{{ offerings.count }} Courses</div>
+        <div class="text-xs text-neutral-500 mt-1">B.Tech & BCA Programs</div>
+    </div>
+    <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm">
+        <span class="text-sm font-medium text-neutral-500">Enrolled Learners</span>
+        <div class="text-2xl font-bold text-neutral-900 mt-2">{{ total_learners|default:"20" }} Students</div>
+        <div class="text-xs text-emerald-600 font-medium mt-1">Active Attendance Roster</div>
+    </div>
+    <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm">
+        <span class="text-sm font-medium text-neutral-500">Today's Lectures</span>
+        <div class="text-2xl font-bold text-neutral-900 mt-2">{{ today_classes.count }} Classes</div>
+        <div class="text-xs text-primary font-medium mt-1">Scheduled in Lab 1 & 2</div>
+    </div>
+    <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm">
+        <span class="text-sm font-medium text-neutral-500">Assessments</span>
+        <div class="text-2xl font-bold text-neutral-900 mt-2">{{ recent_assessments.count }} Midterms</div>
+        <div class="text-xs text-indigo-600 font-medium mt-1">Grading Published</div>
+    </div>
+</div>
+
+<!-- Grid Content -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Left 2 Cols: Today's Schedule & My Courses -->
+    <div class="lg:col-span-2 space-y-8">
+        
+        <!-- Today's Classes -->
+        <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
+                <div>
+                    <h2 class="text-base font-semibold text-neutral-900">Today's Assigned Lectures</h2>
+                    <p class="text-xs text-neutral-500">Take attendance or view enrolled rosters</p>
+                </div>
+                <a href="{% url 'operations:schedule_list' %}" class="text-xs font-semibold text-primary hover:text-primary-dark">Full Timetable</a>
+            </div>
+            <div class="divide-y divide-neutral-100">
+                {% for schedule in today_classes %}
+                <div class="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:bg-neutral-50/50 transition-colors">
+                    <div class="flex items-start gap-4">
+                        <div class="p-3 bg-primary/10 text-primary rounded-xl font-bold text-sm flex flex-col items-center justify-center min-w-[56px]">
+                            <span>{{ schedule.start_time|time:"g:i" }}</span>
+                            <span class="text-[10px] text-neutral-500 uppercase">{{ schedule.start_time|time:"A" }}</span>
+                        </div>
+                        <div>
+                            <h4 class="text-base font-semibold text-neutral-900">{{ schedule.subject_offering.subject.name }}</h4>
+                            <div class="flex items-center gap-3 text-xs text-neutral-500 mt-1">
+                                <span>Program: {{ schedule.subject_offering.program.name }}</span>
+                                <span>•</span>
+                                <span class="bg-neutral-100 text-neutral-700 px-2 py-0.5 rounded font-medium">{{ schedule.room|default:"Lab 1" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="{% url 'operations:attendance_mark' %}" class="px-3.5 py-2 bg-primary text-white rounded-lg text-xs font-medium hover:bg-primary-dark transition-colors">
+                            Take Attendance
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="p-8 text-center text-neutral-400 text-sm">No lectures scheduled for today.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- My Courses / Subject Offerings -->
+        <div class="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
+                <div>
+                    <h2 class="text-base font-semibold text-neutral-900">Assigned Courses & Curriculum</h2>
+                    <p class="text-xs text-neutral-500">Subjects taught by you in the current session</p>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-neutral-50 text-neutral-500 text-xs font-semibold uppercase tracking-wider border-b border-neutral-200">
+                            <th class="py-3 px-6">Subject</th>
+                            <th class="py-3 px-6">Code</th>
+                            <th class="py-3 px-6">Program</th>
+                            <th class="py-3 px-6">Credits</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-neutral-100 text-sm">
+                        {% for offering in offerings %}
+                        <tr class="hover:bg-neutral-50/60">
+                            <td class="py-3.5 px-6 font-medium text-neutral-900">{{ offering.subject.name }}</td>
+                            <td class="py-3.5 px-6 text-neutral-500 font-mono text-xs">{{ offering.subject.code }}</td>
+                            <td class="py-3.5 px-6 text-neutral-700">{{ offering.program.name }}</td>
+                            <td class="py-3.5 px-6 font-semibold text-neutral-900">{{ offering.subject.credits }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="py-6 text-center text-neutral-400 text-sm">No courses assigned yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Right Col: Assessments & Tasks -->
+    <div class="space-y-8">
+        
+        <div class="bg-white rounded-xl border border-neutral-200 shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-semibold text-neutral-900">Recent Assessments</h3>
+                <a href="{% url 'assessment:assessment_list' %}" class="text-xs font-semibold text-primary hover:text-primary-dark">View all</a>
+            </div>
+            <div class="space-y-3">
+                {% for assess in recent_assessments %}
+                <div class="p-3.5 rounded-lg border border-neutral-100 bg-neutral-50/60">
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold text-sm text-neutral-900">{{ assess.name }}</span>
+                        <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Published</span>
+                    </div>
+                    <p class="text-xs text-neutral-500 mt-1">{{ assess.subject_offering.subject.name }}</p>
+                    <div class="mt-2 text-xs text-neutral-500 flex items-center justify-between">
+                        <span>Max Marks: {{ assess.max_marks }}</span>
+                        <span>Pass: {{ assess.passing_marks }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-6 text-neutral-400 text-sm">No assessments published.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
